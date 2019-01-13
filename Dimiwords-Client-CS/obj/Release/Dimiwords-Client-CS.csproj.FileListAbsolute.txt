@@ -9,3 +9,15 @@ C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Release\
 C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.exe
 C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.pdb
 C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Release\Dimiwords_Client_CS.Signup.resources
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\bin\Release\Dimiwords-Client-CS.exe.config
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\bin\Release\Dimiwords-Client-CS.exe
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\bin\Release\Dimiwords-Client-CS.pdb
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.csprojAssemblyReference.cache
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords_Client_CS.Login.resources
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords_Client_CS.Main.resources
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords_Client_CS.Properties.Resources.resources
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords_Client_CS.Signup.resources
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.csproj.GenerateResource.cache
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.csproj.CoreCompileInputs.cache
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.exe
+C:\Users\shimj\Source\Repos\Dimiwords-Client-CS2\Dimiwords-Client-CS\obj\Release\Dimiwords-Client-CS.pdb

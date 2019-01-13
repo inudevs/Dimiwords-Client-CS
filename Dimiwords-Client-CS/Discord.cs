@@ -41,14 +41,21 @@ namespace Dimiwords_Client_CS
         //한글 깨져서 고치려고 만듬
         private static IntPtr C2Ptr(string str)
         {
+            //넘겨받은 인자가 null이 아닐때
             if (str != null)
             {
+                //byte[]로 변경
                 var retArray = Encoding.UTF8.GetBytes(str);
+                //IntPtr로 변경
                 var retPtr = Marshal.AllocHGlobal(retArray.Length + 1);
+                //복사
                 Marshal.Copy(retArray, 0, retPtr, retArray.Length);
+                //새로 써버리기
                 Marshal.WriteByte(retPtr, retArray.Length, 0);
+                //반환
                 return retPtr;
             }
+            //null이므로 IntPtr.Zero 반환
             return IntPtr.Zero;
         }
 
