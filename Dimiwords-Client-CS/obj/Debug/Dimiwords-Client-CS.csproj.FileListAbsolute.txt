@@ -9,3 +9,4 @@ C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Di
 C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.exe
 C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.pdb
 C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords_Client_CS.Login.resources
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords_Client_CS.Signup.resources
