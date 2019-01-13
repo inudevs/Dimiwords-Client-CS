@@ -55,25 +55,27 @@ namespace Dimiwords_Client_CS
         //디스코드 업데이트
         public static void UpdatePresence()
         {
+            //디테일
             presence.details = C2Ptr("https://dimiwords.tk");
-            
+            //상태
             presence.state = C2Ptr("단어 외우는 중...");
-
+            //시작 시간
             if (long.TryParse(DateTime.Now.ToLongDateString(), out long startTimestamp))
             {
                 presence.startTimestamp = startTimestamp;
             }
-
+            //끝난 시간
             if (long.TryParse((DateTime.Now.ToLongDateString() + 1337).ToString(), out long endTimestamp))
             {
                 presence.endTimestamp = endTimestamp;
             }
-
+            //사진
             presence.largeImageKey = "logo";
             presence.largeImageText = null;
             presence.smallImageKey = null;
             presence.smallImageText = null;
 
+            //디스코드 dll 업데이트 메서드
             DiscordRpc.UpdatePresence(ref presence);
         }
 
