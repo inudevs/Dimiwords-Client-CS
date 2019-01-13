@@ -1,0 +1,11 @@
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\bin\Debug\Dimiwords-Client-CS.exe.config
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\bin\Debug\Dimiwords-Client-CS.exe
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\bin\Debug\Dimiwords-Client-CS.pdb
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.csprojAssemblyReference.cache
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords_Client_CS.Main.resources
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords_Client_CS.Properties.Resources.resources
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.csproj.GenerateResource.cache
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.csproj.CoreCompileInputs.cache
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.exe
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords-Client-CS.pdb
+C:\Users\shimj\source\repos\Dimiwords-Client-CS\Dimiwords-Client-CS\obj\Debug\Dimiwords_Client_CS.Login.resources
