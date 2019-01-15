@@ -169,15 +169,19 @@ namespace Dimiwords_Client_CS
                     //받을 준비를 할께!
                     using (var resStream = res.GetResponseStream())
                     {
-                        //받았다!
-                        result = new StreamReader(resStream).ReadToEnd();
-                        //다 받았으니 나머지는 정리할께
-                        resStream.Close();
+                        using (var sr = new StreamReader(resStream))
+                        {
+                            //받았다!
+                            result = sr.ReadToEnd();
+                            //다 받았으니 나머지는 정리할께
+                            resStream.Close();
+                        }
                     }
                 }
                 //이것도 정리
                 res.Close();
             }
+            //json 읽기
             var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
             if (Convert.ToBoolean(success))
             {

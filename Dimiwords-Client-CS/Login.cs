@@ -25,7 +25,7 @@ namespace Dimiwords_Client_CS
             if (!Discord.LibCheck())
             {
                 //메세지박스를 띄워 사용자에게 dll이 없음을 알림
-                MessageBox.Show(this, "discord-rpc-w32.dll이 존재하지 않습니다. dll이 제대로 존재하는지 확인해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, "discord-rpc.dll이 존재하지 않습니다. dll이 제대로 존재하는지 확인해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 //dll이 없으면 정상적으로 작동하지 않음으로 종료
                 Close();
             }
@@ -86,10 +86,13 @@ namespace Dimiwords_Client_CS
                     //받을 준비를 할께!
                     using (var resStream = res.GetResponseStream())
                     {
-                        //받았다!
-                        result = new StreamReader(resStream).ReadToEnd();
-                        //다 받았으니 나머지는 정리할께
-                        resStream.Close();
+                        using (var sr = new StreamReader(resStream))
+                        {
+                            //받았다!
+                            result = sr.ReadToEnd();
+                            //다 받았으니 나머지는 정리할께
+                            resStream.Close();
+                        }
                     }
                 }
                 //이것도 정리
@@ -101,14 +104,14 @@ namespace Dimiwords_Client_CS
             if (Convert.ToBoolean(success))
             {
                 //나머지 json 읽기
-                var name = result.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"," }, StringSplitOptions.None)[0];
-                var intro = result.Split(new string[] { "\"intro\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"," }, StringSplitOptions.None)[0];
-                var email = result.Split(new string[] { "\"email\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"," }, StringSplitOptions.None)[0];
+                var name = result.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                var intro = result.Split(new string[] { "\"intro\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                var email = result.Split(new string[] { "\"email\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 var department = result.Split(new string[] { "\"department\":" }, StringSplitOptions.None)[1].Split(',')[0];
                 var points = result.Split(new string[] { "\"points\":" }, StringSplitOptions.None)[1].Split(',')[0];
                 var submit = result.Split(new string[] { "\"submit\":" }, StringSplitOptions.None)[1].Split(',')[0];
                 var accept = result.Split(new string[] { "\"accept\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                var token = result.Split(new string[] { "\"token\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"," }, StringSplitOptions.None)[0];
+                var token = result.Split(new string[] { "\"token\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 //로그인 창을 종료하고 메인 창을 띄운다 User 정보와 함께
                 new Main(new User(name, intro, email, department, points, submit, accept, token), this).Show();
                 Hide();
@@ -117,7 +120,7 @@ namespace Dimiwords_Client_CS
             else
             {
                 //어째서 실패했는지 가져온다
-                var error = result.Split(new string[] { "\"error\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"}" }, StringSplitOptions.None)[0];
+                var error = result.Split(new string[] { "\"error\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 //실패한 이유를 사용자에게 알려준다
                 MessageBox.Show(this, $"{(error == "No User" ? "로그인 정보가 맞는지 확인해주세요." : "로그인 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
