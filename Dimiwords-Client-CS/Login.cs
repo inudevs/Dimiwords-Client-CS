@@ -28,6 +28,7 @@ namespace Dimiwords_Client_CS
                 MessageBox.Show(this, "discord-rpc.dll이 존재하지 않습니다. dll이 제대로 존재하는지 확인해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 //dll이 없으면 정상적으로 작동하지 않음으로 종료
                 Close();
+                return;
             }
             //dll이 존재하므로 true로 변경
             IsDLL = true;
@@ -178,6 +179,17 @@ namespace Dimiwords_Client_CS
         private void button2_Click(object sender, EventArgs e)
         {
             new Signup().Show();
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //엔터 키를 누르면 로그인 버튼이 자동으로 눌리게 만듬
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                button1.PerformClick();
+                //이게 없으면 엔터를 누르면 에러 소리가 난다
+                e.Handled = true;
+            }
         }
     }
 }

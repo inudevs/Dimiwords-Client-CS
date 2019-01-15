@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -20,6 +21,11 @@ namespace Dimiwords_Client_CS
             user_data = user;
             //로그인 창을 제대로 종료하기 위해 인자로 넘겨받는다
             loginform = login;
+            var dummy = new ImageList
+            {
+                ImageSize = new Size(1, 20)
+            };
+            listView1.SmallImageList = dummy;
         }
 
         //창을 껐을때 실행
@@ -274,7 +280,8 @@ namespace Dimiwords_Client_CS
                         });
                     }
                     //업데이트가 끝남을 알려 데이터 업데이트를 완료함
-                    Invoke((MethodInvoker)delegate () {  listView1.EndUpdate(); });
+                    //label에 현재 페이지를 알려줌
+                    Invoke((MethodInvoker)delegate () {  listView1.EndUpdate(); label1.Text = page.ToString(); });
                 }
             }
             else
