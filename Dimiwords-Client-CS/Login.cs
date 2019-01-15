@@ -33,6 +33,12 @@ namespace Dimiwords_Client_CS
             IsDLL = true;
             //디스코드에 연결
             Discord.Start();
+            if (Properties.Settings.Default.ID != "이메일")
+            {
+                textBox1.Text = Properties.Settings.Default.ID;
+                textBox1.ForeColor = Color.FromKnownColor(KnownColor.WindowText);
+                textBox2.Select();
+            }
         }
 
         //창을 닫으면 실행
@@ -103,6 +109,9 @@ namespace Dimiwords_Client_CS
             //로그인에 성공했다면
             if (Convert.ToBoolean(success))
             {
+                //아이디 자동 저장
+                Properties.Settings.Default.ID = textBox1.Text;
+                Properties.Settings.Default.Save();
                 //나머지 json 읽기
                 var name = result.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 var intro = result.Split(new string[] { "\"intro\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
