@@ -166,6 +166,7 @@
             this.Controls.Add(this.textBox1);
             this.Name = "Signup";
             this.Text = "Signup";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Signup_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

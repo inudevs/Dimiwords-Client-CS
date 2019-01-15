@@ -40,6 +40,7 @@ namespace Dimiwords_Client_CS
                 textBox1.ForeColor = Color.FromKnownColor(KnownColor.WindowText);
                 textBox2.Select();
             }
+            Discord.StateUpdate("로그인 중...");
         }
 
         //창을 닫으면 실행

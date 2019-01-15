@@ -26,6 +26,7 @@ namespace Dimiwords_Client_CS
                 ImageSize = new Size(1, 20)
             };
             listView1.SmallImageList = dummy;
+            Discord.StateUpdate("시간을 버리는 중...");
         }
 
         //창을 껐을때 실행
@@ -311,6 +312,22 @@ namespace Dimiwords_Client_CS
             //멀티 스레딩
             new Thread(new ParameterizedThreadStart(GetRank)) { IsBackground = true }.Start(null);
             //GetRank(null);
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (tabControl1.SelectedIndex)
+            {
+                case 0:
+                    Discord.StateUpdate("단어 살펴 보는 중...");
+                    break;
+                case 1:
+                    Discord.StateUpdate("단어장 살펴 보는 중...");
+                    break;
+                case 2:
+                    Discord.StateUpdate("랭킹 살펴 보는 중...");
+                    break;
+            }
         }
     }
 }

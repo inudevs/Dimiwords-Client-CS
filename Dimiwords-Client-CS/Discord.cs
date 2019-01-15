@@ -9,6 +9,7 @@ namespace Dimiwords_Client_CS
 {
     class Discord
     {
+        static long time = DateTime.Now.Ticks;
         static RichPresence presence;
         static EventHandlers handlers;
 
@@ -59,23 +60,23 @@ namespace Dimiwords_Client_CS
             return IntPtr.Zero;
         }
 
+        //디스코드 상태 업데이트
+        public static void StateUpdate(string state)
+        {
+            UpdatePresence(state);
+        }
+
         //디스코드 업데이트
-        public static void UpdatePresence()
+        private static void UpdatePresence(string state)
         {
             //디테일
             presence.details = C2Ptr("https://dimiwords.tk");
             //상태
-            presence.state = C2Ptr("단어 외우는 중...");
+            presence.state = C2Ptr(state);
             //시작 시간
-            if (long.TryParse(DateTime.Now.ToLongDateString(), out long startTimestamp))
-            {
-                presence.startTimestamp = startTimestamp;
-            }
+            presence.startTimestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
             //끝난 시간
-            if (long.TryParse((DateTime.Now.ToLongDateString() + 1337).ToString(), out long endTimestamp))
-            {
-                presence.endTimestamp = endTimestamp;
-            }
+            //presence.endTimestamp = (DateTime.Now.Ticks + 5) * 60;
             //사진
             presence.largeImageKey = "logo";
             presence.largeImageText = null;
@@ -91,7 +92,6 @@ namespace Dimiwords_Client_CS
         {
             var clientId = "528625130012934174";
             Initialize(clientId);
-            UpdatePresence();
         }
 
         //연결 끊기

@@ -15,6 +15,7 @@ namespace Dimiwords_Client_CS
         public Signup()
         {
             InitializeComponent();
+            Discord.StateUpdate("가입 하는 중...");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -192,6 +193,11 @@ namespace Dimiwords_Client_CS
                 var message = result.Split(new string[] { "\"message\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"}" }, StringSplitOptions.None)[0];
                 MessageBox.Show(this, $"계정 생성에 실패했습니다. {(message == "User exits" ? "같은 이메일의 사용자가 이미 존재합니다." : "회원가입 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Signup_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Discord.StateUpdate("로그인 하는 중...");
         }
     }
 }
