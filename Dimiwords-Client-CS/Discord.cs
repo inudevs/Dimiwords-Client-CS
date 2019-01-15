@@ -9,7 +9,6 @@ namespace Dimiwords_Client_CS
 {
     class Discord
     {
-        static long time = DateTime.Now.Ticks;
         static RichPresence presence;
         static EventHandlers handlers;
 
