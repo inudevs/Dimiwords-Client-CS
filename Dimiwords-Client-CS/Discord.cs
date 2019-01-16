@@ -64,7 +64,7 @@ namespace Dimiwords_Client_CS
         {
             UpdatePresence(state);
         }
-
+        
         //디스코드 업데이트
         private static void UpdatePresence(string state)
         {

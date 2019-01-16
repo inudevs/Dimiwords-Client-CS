@@ -13,7 +13,7 @@ namespace Dimiwords_Client_CS
 
         private User user_data;
         private Login loginform;
-        
+
         public Main(User user, Login login)
         {
             InitializeComponent();
@@ -25,8 +25,12 @@ namespace Dimiwords_Client_CS
             {
                 ImageSize = new Size(1, 20)
             };
+            var dummy2 = new ImageList
+            {
+                ImageSize = new Size(1, 40)
+            };
             listView1.SmallImageList = dummy;
-            Discord.StateUpdate("시간을 버리는 중...");
+            listView2.SmallImageList = dummy2;
         }
 
         //창을 껐을때 실행
@@ -36,8 +40,18 @@ namespace Dimiwords_Client_CS
             loginform.Close();
         }
 
+        private object wordbookslock = new object();
+
+        private void GetWordbooks(object next)
+        {
+            Monitor.Enter(wordbookslock);
+            //단어장 얻어오기
+            if (Monitor.IsEntered(wordbookslock))
+                Monitor.Exit(wordbookslock);
+        }
+
         //스레드를 한개씩만 돌리기 위한 오브젝트
-        private object lockob = new object();
+        private object ranklock = new object();
 
         /// <summary>
         /// 랭크를 얻어오는 메서드
@@ -49,7 +63,7 @@ namespace Dimiwords_Client_CS
         private void GetRank(object next)
         {
             //스레드 잠금 (한번에 한번씩만 작동)
-            Monitor.Enter(lockob);
+            Monitor.Enter(ranklock);
             //결과값을 받을 변수를 string형태로 비워진 변수를 만듬
             var result = string.Empty;
             //처음 페이지, 마지막 페이지 구분
@@ -290,8 +304,8 @@ namespace Dimiwords_Client_CS
                 MessageBox.Show(this, "랭크를 얻어오는데 실패했습니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             //잠금 해제
-            if (Monitor.IsEntered(lockob))
-                Monitor.Exit(lockob);
+            if (Monitor.IsEntered(ranklock))
+                Monitor.Exit(ranklock);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -309,6 +323,7 @@ namespace Dimiwords_Client_CS
 
         private void Main_Load(object sender, EventArgs e)
         {
+            Discord.StateUpdate("시간을 버리는 중...");
             //멀티 스레딩
             new Thread(new ParameterizedThreadStart(GetRank)) { IsBackground = true }.Start(null);
             //GetRank(null);
@@ -328,6 +343,11 @@ namespace Dimiwords_Client_CS
                     Discord.StateUpdate("랭킹 살펴 보는 중...");
                     break;
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //단어 추가
         }
     }
 }
