@@ -24,7 +24,7 @@ namespace Dimiwords_Client_CS
             loginform = login;
             //유저 정보
             label4.Text = user.name;
-            var department = string.Empty;
+            var department = "";
             switch (user.department)
             {
                 case "0":
@@ -73,7 +73,7 @@ namespace Dimiwords_Client_CS
         private void GetWordbooks(object next)
         {
             Monitor.Enter(wordbookslock);
-            var result = string.Empty;
+            var result = "";
             if (next != null)
             {
                 if ((bool)next)
@@ -178,7 +178,7 @@ namespace Dimiwords_Client_CS
                         var intro = Booksdata[i]["intro"].ToString();
                         var wordscount = Booksdata[i]["len"].ToString();
                         var user = Booksdata[i]["user"].ToString();
-                        var item = new ListViewItem(new string[] { string.Empty, name == string.Empty ? "제목없음" : name, intro == string.Empty ? "설명없음" : intro, wordscount, user });
+                        var item = new ListViewItem(new string[] { "", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user });
                         Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
                     }
                     Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = wordbookspage.ToString(); });
@@ -207,7 +207,7 @@ namespace Dimiwords_Client_CS
             //스레드 잠금 (한번에 한번씩만 작동)
             Monitor.Enter(ranklock);
             //결과값을 받을 변수를 string형태로 비워진 변수를 만듬
-            var result = string.Empty;
+            var result = "";
             //처음 페이지, 마지막 페이지 구분
             //이전, 다음 구분
             //json 읽기
@@ -387,14 +387,9 @@ namespace Dimiwords_Client_CS
                         var intro = Userdata[i]["intro"].ToString();
                         var department = Userdata[i]["department"].ToString();
                         var points = Userdata[i]["points"].ToString();
-                        var accept = 0;
-                        var submit = 0;
-                        try
-                        {
-                            accept = (int)Userdata[i]["accept"];
-                            submit = (int)Userdata[i]["submit"];
-                        }
-                        catch (ArgumentNullException) { }
+                        //비어 있는 경우가 있어 null체크
+                        var accept = ((int?)Userdata[i]["accept"]).HasValue ? (int)Userdata[i]["accept"] : 0;
+                        var submit = ((int?)Userdata[i]["submit"]).HasValue ? (int)Userdata[i]["submit"] : 0;
                         //Userdata = Userdata.Substring(Userdata.IndexOf("\"name\":\"") + 8);
                         //var name = Userdata.Split('"')[0];
                         //Userdata = Userdata.Substring(Userdata.IndexOf("\"intro\":\"") + 9);

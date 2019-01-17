@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -141,9 +142,9 @@ namespace Dimiwords_Client_CS
                 return;
             }
             //결과값 변수를 비어져 있는 string자료형으로 선언
-            var result = string.Empty;
+            var result = "";
             //json형태로 Byte[]자료형 선언
-            var Data = Encoding.UTF8.GetBytes($"{{\"name\":\"{textBox1.Text}\",\"password\":\"{textBox2.Text}\",\"email\":\"{textBox3.Text}\",\"intro\":\"{textBox4.Text}\",\"department\":{department}}}");
+            var Data = Encoding.UTF8.GetBytes($"{{\"name\":\"{textBox3.Text}\",\"password\":\"{textBox2.Text}\",\"email\":\"{textBox1.Text}\",\"intro\":\"{textBox4.Text}\",\"department\":{department}}}");
             //로그인 서버
             var req = (HttpWebRequest)WebRequest.Create("https://dimiwords.tk:5000/api/create/user");
             //Post 형태로
@@ -154,12 +155,21 @@ namespace Dimiwords_Client_CS
             req.ContentLength = Data.Length;
             //using = 용량이 큰 자료형에 존재하는 함수인 Dispose를 자동으로 실행
             //보낼 준비를 할께!
-            using (var reqStream = req.GetRequestStream())
+            try
             {
-                //보낸다!
-                reqStream.Write(Data, 0, Data.Length);
-                //다 보냈으니 나머지는 정리할께
-                reqStream.Close();
+                using (var reqStream = req.GetRequestStream())
+                {
+                    //보낸다!
+                    reqStream.Write(Data, 0, Data.Length);
+                    //다 보냈으니 나머지는 정리할께
+                    reqStream.Close();
+                }
+            }
+            catch (WebException ex)
+            {
+                MessageBox.Show(this, $"서버에 제대로 연결하지 못했습니다.\n{ex.Message}\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
+                return;
             }
             //이제 받을 준비를 할께!
             using (var res = (HttpWebResponse)req.GetResponse())
@@ -183,15 +193,19 @@ namespace Dimiwords_Client_CS
                 res.Close();
             }
             //json 읽기
-            var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
+            var json = JObject.Parse(result);
+            var success = json["success"].ToString();
+            //var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
             if (Convert.ToBoolean(success))
             {
                 MessageBox.Show(this, "회원가입에 성공했습니다! 로그인해 주세요.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                var message = result.Split(new string[] { "\"message\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"}" }, StringSplitOptions.None)[0];
-                MessageBox.Show(this, $"계정 생성에 실패했습니다. {(message == "User exits" ? "같은 이메일의 사용자가 이미 존재합니다." : "회원가입 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var message = json["message"].ToString();
+                Console.WriteLine(message);
+                //var message = result.Split(new string[] { "\"message\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"}" }, StringSplitOptions.None)[0];
+                MessageBox.Show(this, $"계정 생성에 실패했습니다. {(message == "User exists" ? "같은 이메일의 사용자가 이미 존재합니다." : "회원가입 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

@@ -74,7 +74,7 @@ namespace Dimiwords_Client_CS
                 return;
             }
             //결과값 변수를 비어져 있는 string자료형으로 선언
-            var result = string.Empty;
+            var result = "";
             //json형태로 Byte[]자료형 선언
             var Data = Encoding.UTF8.GetBytes($"{{\"email\":\"{textBox1.Text}\",\"password\":\"{textBox2.Text}\"}}");
             //로그인 서버
@@ -99,7 +99,7 @@ namespace Dimiwords_Client_CS
             }
             catch (WebException ex)
             {
-                MessageBox.Show(this, $"서버에 제대로 연결하지 못했습니다. {ex.Message}\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, $"서버에 제대로 연결하지 못했습니다.\n{ex.Message}\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Close();
                 return;
             }
