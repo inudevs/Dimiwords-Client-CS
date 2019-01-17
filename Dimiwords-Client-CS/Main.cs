@@ -4,12 +4,14 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Dimiwords_Client_CS
 {
     public partial class Main : Form
     {
-        private int page = 1;
+        private int rankpage = 1, wordbookspage = 1;
 
         private User user_data;
         private Login loginform;
@@ -45,7 +47,121 @@ namespace Dimiwords_Client_CS
         private void GetWordbooks(object next)
         {
             Monitor.Enter(wordbookslock);
-            //단어장 얻어오기
+            var result = string.Empty;
+            if (next != null)
+            {
+                if ((bool)next)
+                {
+                    wordbookspage++;
+                }
+                else
+                {
+                    wordbookspage--;
+                }
+            }
+            var req = (HttpWebRequest)WebRequest.Create($"https://dimiwords.tk:5000/api/list/wordbooks?page={wordbookspage}");
+            using (var res = (HttpWebResponse)req.GetResponse())
+            {
+                //너의 상태가 괜찮아 보이는군!
+                if (res.StatusCode == HttpStatusCode.OK)
+                {
+                    //받을 준비를 할께!
+                    using (var resStream = res.GetResponseStream())
+                    {
+                        //StreamReader로 stream의 데이터를 읽는다
+                        using (var sr = new StreamReader(resStream))
+                        {
+                            //받았다!
+                            result = sr.ReadToEnd();
+                            //다 받았으니 나머지는 정리할께
+                            resStream.Close();
+                        }
+                    }
+                }
+                //이것도 정리
+                res.Close();
+            }
+            var json = JObject.Parse(result);
+            //;
+            //MessageBox.Show(json["success"].ToString());
+            //var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
+            var success = (bool)json["success"];
+            if (success)
+            {
+                //var pages_count = int.Parse(result.Split(new string[] { "\"pages\":" }, StringSplitOptions.None)[1].Split('}')[0]);
+                var pages_count = (int)json["result"]["pages"];
+                //현재 페이지가 1이면 이전 페이지 비활성화
+                if (wordbookspage == 1)
+                {
+                    Invoke((MethodInvoker)delegate () { button5.Enabled = false; });
+                }
+                else
+                {
+                    //현재 페이지가 마지막 페이지면 다음 페이지 비활성화
+                    if (wordbookspage == pages_count)
+                    {
+                        Invoke((MethodInvoker)delegate () { button4.Enabled = false; });
+                    }
+                    else
+                    {
+                        //둘다 아니라면 둘다 활성화
+                        Invoke((MethodInvoker)delegate () { button5.Enabled = button4.Enabled = true; });
+                    }
+                }
+                if (wordbookspage < 1)
+                {
+                    //page가 1보다 낮아지는 경우는 이전버튼을 연타하여 같은 메서드가 반복될때이다
+                    //그러므로 page를 1로 고정하고 아래의 소스들은 반복하지 않는다
+                    wordbookspage = 1;
+                    //첫 페이지면 이전 페이지 비활성화
+                    Invoke((MethodInvoker)delegate () { button5.Enabled = false; });
+                }
+                else if (rankpage > pages_count)
+                {
+                    //위와 같은 경우이다
+                    wordbookspage = pages_count;
+                    //마지막 페이지면 다음 페이지 비활성화
+                    Invoke((MethodInvoker)delegate () { button4.Enabled = false; });
+                }
+                else
+                {
+                    //var Booksdata = result.Split(new string[] { "\"docs\":[" }, StringSplitOptions.None)[1].Split(new string[] { "}],\"total\"" }, StringSplitOptions.None)[0];
+                    var Booksdata = JArray.Parse(json["result"]["docs"].ToString());
+                    //처음엔 전체 단어장 수를 가져온다
+                    //var Bookscount = int.Parse(result.Split(new string[] { "\"total\":" }, StringSplitOptions.None)[1].Split(',')[0]);
+                    var Bookscount = (int)json["result"]["total"];
+                    //페이지가 마지막 페이지라면
+                    if (wordbookspage == pages_count)
+                    {
+                        //마지막 페이지의 단어장 수를 계산한다
+                        Bookscount -= (pages_count - 1) * 9;
+                    }
+                    else
+                    {
+                        //아니면 그냥 9개
+                        Bookscount = 9;
+                    }
+                    //단어장을 그냥 갱신하면 순차적으로 업데이트 되므로 한번에 업데이트 되도록 BeginUpdate 메서드 사용
+                    //페이지 형식이기 때문에 Clear를 사용해 전 페이지는 삭제
+                    Invoke((MethodInvoker)delegate () { listView2.BeginUpdate(); listView2.Items.Clear(); });
+                    //MessageBox.Show(Booksdata[0].ToString());
+                    //단어장 페이지의 단어장 수 만큼 반복
+                    for (var i = 0; i < Bookscount; i++)
+                    {
+                        var wordscount = Booksdata[i]["len"].ToString();
+                        var name = Booksdata[i]["name"].ToString();
+                        var intro = Booksdata[i]["intro"].ToString();
+                        var user = Booksdata[i]["user"].ToString();
+                        var item = new ListViewItem(new string[] { wordscount, name == string.Empty ? "제목없음" : name, intro == string.Empty ? "설명없음" : intro, user });
+                        Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
+                    }
+                    Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = rankpage.ToString(); });
+                }
+            }
+            else
+            {
+                MessageBox.Show(this, "단어장을 얻어오는데 실패했습니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             if (Monitor.IsEntered(wordbookslock))
                 Monitor.Exit(wordbookslock);
         }
@@ -139,54 +255,57 @@ namespace Dimiwords_Client_CS
                 //true면
                 if ((bool)next)
                     //+ 1을 해준다
-                    page++;
+                    rankpage++;
                 //아니면
-                else if (!(bool)next)
+                else
                 {
                     //- 1을 해준다
-                    page--;
+                    rankpage--;
                 }
             }
             //인터넷에 연결한다 (GET형식이므로 주소에서 데이터를 넘겨준다)
-            var req2 = (HttpWebRequest)WebRequest.Create($"https://dimiwords.tk:5000/api/list/rank?page={page}");
+            var req = (HttpWebRequest)WebRequest.Create($"https://dimiwords.tk:5000/api/list/rank?page={rankpage}");
             //데이터 받기
-            using (var res2 = (HttpWebResponse)req2.GetResponse())
+            using (var res = (HttpWebResponse)req.GetResponse())
             {
                 //너의 상태가 괜찮아 보이는군!
-                if (res2.StatusCode == HttpStatusCode.OK)
+                if (res.StatusCode == HttpStatusCode.OK)
                 {
                     //받을 준비를 할께!
-                    using (var resStream2 = res2.GetResponseStream())
+                    using (var resStream = res.GetResponseStream())
                     {
                         //StreamReader로 stream의 데이터를 읽는다
-                        using (var sr2 = new StreamReader(resStream2))
+                        using (var sr = new StreamReader(resStream))
                         {
                             //받았다!
-                            result = sr2.ReadToEnd();
+                            result = sr.ReadToEnd();
                             //다 받았으니 나머지는 정리할께
-                            resStream2.Close();
+                            resStream.Close();
                         }
                     }
                 }
                 //이것도 정리
-                res2.Close();
+                res.Close();
             }
+            var json = JObject.Parse(result);
             //성공 여부를 파싱
-            var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
+            //var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
+            var success = (bool)json["success"];
             //true 또는 false를 가지고 있는 string변수를 bool의 형태로 바꿔준다
-            if (Convert.ToBoolean(success))
+            if (success)
             {
                 //전체 페이지 수를 파싱
-                var pages_count = int.Parse(result.Split(new string[] { "\"pages\":" }, StringSplitOptions.None)[1].Split('}')[0]);
+                //var pages_count = int.Parse(result.Split(new string[] { "\"pages\":" }, StringSplitOptions.None)[1].Split('}')[0]);
+                var pages_count = (int)json["result"]["pages"];
                 //현재 페이지가 1이면 이전 페이지 비활성화
-                if (page == 1)
+                if (rankpage == 1)
                 {
                     Invoke((MethodInvoker)delegate () { button1.Enabled = false; });
                 }
                 else
                 {
                     //현재 페이지가 마지막 페이지면 다음 페이지 비활성화
-                    if (page == pages_count)
+                    if (rankpage == pages_count)
                     {
                         Invoke((MethodInvoker)delegate () { button2.Enabled = false; });
                     }
@@ -196,29 +315,31 @@ namespace Dimiwords_Client_CS
                         Invoke((MethodInvoker)delegate () { button1.Enabled = button2.Enabled = true; });
                     }
                 }
-                if (page < 1)
+                if (rankpage < 1)
                 {
                     //page가 1보다 낮아지는 경우는 이전버튼을 연타하여 같은 메서드가 반복될때이다
                     //그러므로 page를 1로 고정하고 아래의 소스들은 반복하지 않는다
-                    page = 1;
+                    rankpage = 1;
                     //첫 페이지면 이전 페이지 비활성화
                     Invoke((MethodInvoker)delegate () { button1.Enabled = false; });
                 }
-                else if (page > pages_count)
+                else if (rankpage > pages_count)
                 {
                     //위와 같은 경우이다
-                    page = pages_count;
+                    rankpage = pages_count;
                     //마지막 페이지면 다음 페이지 비활성화
                     Invoke((MethodInvoker)delegate () { button2.Enabled = false; });
                 }
                 else
                 {
                     //전체 json 중에 유저 정보만 가져온다
-                    var Userdata = result.Split(new string[] { "\"docs\":[" }, StringSplitOptions.None)[1].Split(']')[0];
+                    //var Userdata = result.Split(new string[] { "\"docs\":[" }, StringSplitOptions.None)[1].Split(']')[0];
+                    var Userdata = JArray.Parse(json["result"]["docs"].ToString());
                     //처음엔 전체 유저 수를 가져온다
-                    var Usercount = int.Parse(result.Split(new string[] { "\"total\":" }, StringSplitOptions.None)[1].Split(',')[0]);
+                    //var Usercount = int.Parse(result.Split(new string[] { "\"total\":" }, StringSplitOptions.None)[1].Split(',')[0]);
+                    var Usercount = (int)json["result"]["total"];
                     //페이지가 마지막 페이지라면
-                    if (page == pages_count)
+                    if (rankpage == pages_count)
                     {
                         //마지막 페이지의 유저 수를 계산한다
                         Usercount -= (pages_count - 1) * 20;
@@ -232,42 +353,54 @@ namespace Dimiwords_Client_CS
                     //페이지 형식이기 때문에 Clear를 사용해 전 페이지는 삭제
                     Invoke((MethodInvoker)delegate () { listView1.BeginUpdate(); listView1.Items.Clear(); });
                     //랭킹 페이지의 유저 수 만큼 반복
-                    for (var i = 1; i <= Usercount; i++)
+                    for (var i = 0; i < Usercount; i++)
                     {
                         //json 읽기
-                        var rank = (page - 1) * 20 + i;
-                        Userdata = Userdata.Substring(Userdata.IndexOf("\"name\":\"") + 8);
-                        var name = Userdata.Split('"')[0];
-                        Userdata = Userdata.Substring(Userdata.IndexOf("\"intro\":\"") + 9);
-                        var intro = Userdata.Split('"')[0];
-                        Userdata = Userdata.Substring(Userdata.IndexOf("\"department\":") + 13);
-                        var department = Userdata.Split(',')[0];
-                        Userdata = Userdata.Substring(Userdata.IndexOf("\"points\":") + 9);
-                        var points = Userdata.Split(',')[0];
+                        var rank = (rankpage - 1) * 20 + i + 1;
+                        var name = Userdata[i]["name"].ToString();
+                        var intro = Userdata[i]["intro"].ToString();
+                        var department = Userdata[i]["department"].ToString();
+                        var points = Userdata[i]["points"].ToString();
                         var accept = 0;
                         var submit = 0;
-                        
+                        try
+                        {
+                            accept = (int)Userdata[i]["accept"];
+                            submit = (int)Userdata[i]["submit"];
+                        }
+                        catch (ArgumentNullException) { }
+                        //Userdata = Userdata.Substring(Userdata.IndexOf("\"name\":\"") + 8);
+                        //var name = Userdata.Split('"')[0];
+                        //Userdata = Userdata.Substring(Userdata.IndexOf("\"intro\":\"") + 9);
+                        //var intro = Userdata.Split('"')[0];
+                        //Userdata = Userdata.Substring(Userdata.IndexOf("\"department\":") + 13);
+                        //var department = Userdata.Split(',')[0];
+                        //Userdata = Userdata.Substring(Userdata.IndexOf("\"points\":") + 9);
+                        //var points = Userdata.Split(',')[0];
+                        //var accept = 0;
+                        //var submit = 0;
+
                         //if (Userdata.Split(new string[] { "\"accept\":" }, StringSplitOptions.None).Length == i + 1)
                         //{
                         //accept, submit 순서 맞춰주기
                         //accept, submit이 없는 경우 (플레이를 안한경우) accept, submit 모두 0
-                        if (Userdata.Contains("\"accept\":") || Userdata.Contains("\"submit\":"))
-                        {
-                            if (Userdata.Substring(Userdata.IndexOf("\"submit\":") + 9).Split('}')[0].Contains("accept"))
-                            {
-                                Userdata = Userdata.Substring(Userdata.IndexOf("\"submit\":") + 9);
-                                submit = int.Parse(Userdata.Split(',')[0]);
-                                Userdata = Userdata.Substring(Userdata.IndexOf("\"accept\":") + 9);
-                                accept = int.Parse(Userdata.Split('}')[0]);
-                            }
-                            else if (Userdata.Substring(Userdata.IndexOf("\"accept\":") + 9).Split('}')[0].Contains("submit"))
-                            {
-                                Userdata = Userdata.Substring(Userdata.IndexOf("\"accept\":") + 9);
-                                accept = int.Parse(Userdata.Split(',')[0]);
-                                Userdata = Userdata.Substring(Userdata.IndexOf("\"submit\":") + 9);
-                                submit = int.Parse(Userdata.Split('}')[0]);
-                            }
-                        }
+                        //if (Userdata.Contains("\"accept\":") || Userdata.Contains("\"submit\":"))
+                        //{
+                        //    if (Userdata.Substring(Userdata.IndexOf("\"submit\":") + 9).Split('}')[0].Contains("accept"))
+                        //    {
+                        //        Userdata = Userdata.Substring(Userdata.IndexOf("\"submit\":") + 9);
+                        //        submit = int.Parse(Userdata.Split(',')[0]);
+                        //        Userdata = Userdata.Substring(Userdata.IndexOf("\"accept\":") + 9);
+                        //        accept = int.Parse(Userdata.Split('}')[0]);
+                        //    }
+                        //    else if (Userdata.Substring(Userdata.IndexOf("\"accept\":") + 9).Split('}')[0].Contains("submit"))
+                        //    {
+                        //        Userdata = Userdata.Substring(Userdata.IndexOf("\"accept\":") + 9);
+                        //        accept = int.Parse(Userdata.Split(',')[0]);
+                        //        Userdata = Userdata.Substring(Userdata.IndexOf("\"submit\":") + 9);
+                        //        submit = int.Parse(Userdata.Split('}')[0]);
+                        //    }
+                        //}
                         //}
                         switch (department)
                         {
@@ -296,7 +429,7 @@ namespace Dimiwords_Client_CS
                     }
                     //업데이트가 끝남을 알려 데이터 업데이트를 완료함
                     //label에 현재 페이지를 알려줌
-                    Invoke((MethodInvoker)delegate () {  listView1.EndUpdate(); label1.Text = page.ToString(); });
+                    Invoke((MethodInvoker)delegate () {  listView1.EndUpdate(); label1.Text = rankpage.ToString(); });
                 }
             }
             else
@@ -326,6 +459,7 @@ namespace Dimiwords_Client_CS
             Discord.StateUpdate("시간을 버리는 중...");
             //멀티 스레딩
             new Thread(new ParameterizedThreadStart(GetRank)) { IsBackground = true }.Start(null);
+            new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(null);
             //GetRank(null);
         }
 
@@ -343,6 +477,16 @@ namespace Dimiwords_Client_CS
                     Discord.StateUpdate("랭킹 살펴 보는 중...");
                     break;
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(false);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(true);
         }
 
         private void button3_Click(object sender, EventArgs e)
