@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Discord.cs" />
+    <Compile Include="Learn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Learn.Designer.cs">
+      <DependentUpon>Learn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +77,10 @@
       <DependentUpon>Signup.cs</DependentUpon>
     </Compile>
     <Compile Include="User.cs" />
+    <Compile Include="Wordbooks.cs" />
+    <EmbeddedResource Include="Learn.resx">
+      <DependentUpon>Learn.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
