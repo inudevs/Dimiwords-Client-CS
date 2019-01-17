@@ -13,7 +13,10 @@ namespace Dimiwords_Client_CS
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Login());
+            Login login = new Login();
+            login.ShowDialog();
+            Application.Run(new Main(login.user));
+            //Application.Run(new Login());
         }
     }
 }

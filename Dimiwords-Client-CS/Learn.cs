@@ -207,10 +207,15 @@ namespace Dimiwords_Client_CS
 
         private void Learn_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //버튼 위에 마우스 올리면 뜨는 설명을 삭제
             buttonToolTip.Dispose();
+            //스레드를 강제 종료
             t.Abort();
+            //메세지박스를 띄워 사용자에게 알려줌
             MessageBox.Show($"{wordbooks.Count()}문제 중 {accept}개를 맞췄어요!\n총 {accept}포인트를 획득했습니다!", "Congratulation!", MessageBoxButtons.OK, MessageBoxIcon.None);
+            //디스코드 상태 업데이트
             Discord.StateUpdate("단어장 살펴 보는 중...");
+            //메인창을 띄워준다
             main.Show();
         }
 

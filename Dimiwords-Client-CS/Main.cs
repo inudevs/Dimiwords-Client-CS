@@ -14,15 +14,12 @@ namespace Dimiwords_Client_CS
         private int rankpage = 1, wordbookspage = 1;
 
         private User user_data;
-        private Login loginform;
 
-        public Main(User user, Login login)
+        public Main(User user)
         {
             InitializeComponent();
             //유저 정보를 넘겨받는다
             user_data = user;
-            //로그인 창을 제대로 종료하기 위해 인자로 넘겨받는다
-            loginform = login;
             //유저 정보
             label4.Text = user.name;
             var department = "";
@@ -60,13 +57,6 @@ namespace Dimiwords_Client_CS
             };
             listView1.SmallImageList = dummy;
             listView2.SmallImageList = dummy2;
-        }
-
-        //창을 껐을때 실행
-        private void Main_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //로그인 창은 숨겨두기만 한 것이므로 제대로 종료한다
-            loginform.Close();
         }
 
         private object wordbookslock = new object();

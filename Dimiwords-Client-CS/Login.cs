@@ -12,6 +12,7 @@ namespace Dimiwords_Client_CS
     {
         //dll이 존재하는지 확인하기 위한 변수
         private bool IsDLL = false;
+        public User user;
 
         public Login()
         {
@@ -143,8 +144,10 @@ namespace Dimiwords_Client_CS
                 var accept = json["user"]["accept"].ToString();
                 var token = json["token"].ToString();
                 //로그인 창을 종료하고 메인 창을 띄운다 User 정보와 함께
-                new Main(new User(name, intro, email, department, points, submit, accept, token), this).Show();
-                Hide();
+                //new Main(new User(name, intro, email, department, points, submit, accept, token)).Show();
+                user = new User(name, intro, email, department, points, submit, accept, token);
+                //Hide();
+                Close();
             }
             //로그인에 실패했다면
             else
