@@ -125,7 +125,6 @@ namespace Dimiwords_Client_CS
                 res.Close();
             }
             //json 읽기
-            //var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
             var json = JObject.Parse(result);
             var success = (bool)json["success"];
             //로그인에 성공했다면
@@ -143,14 +142,6 @@ namespace Dimiwords_Client_CS
                 var submit = json["user"]["submit"].ToString();
                 var accept = json["user"]["accept"].ToString();
                 var token = json["token"].ToString();
-                //var name = result.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                //var intro = result.Split(new string[] { "\"intro\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                //var email = result.Split(new string[] { "\"email\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                //var department = result.Split(new string[] { "\"department\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                //var points = result.Split(new string[] { "\"points\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                //var submit = result.Split(new string[] { "\"submit\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                //var accept = result.Split(new string[] { "\"accept\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                //var token = result.Split(new string[] { "\"token\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 //로그인 창을 종료하고 메인 창을 띄운다 User 정보와 함께
                 new Main(new User(name, intro, email, department, points, submit, accept, token), this).Show();
                 Hide();
@@ -159,7 +150,6 @@ namespace Dimiwords_Client_CS
             else
             {
                 //어째서 실패했는지 가져온다
-                //var error = result.Split(new string[] { "\"error\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 var error = json["error"].ToString();
                 //실패한 이유를 사용자에게 알려준다
                 MessageBox.Show(this, $"{(error == "No User" ? "로그인 정보가 맞는지 확인해주세요." : "로그인 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Hand);

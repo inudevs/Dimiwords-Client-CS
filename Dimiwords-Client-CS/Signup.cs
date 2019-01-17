@@ -195,7 +195,6 @@ namespace Dimiwords_Client_CS
             //json 읽기
             var json = JObject.Parse(result);
             var success = json["success"].ToString();
-            //var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
             if (Convert.ToBoolean(success))
             {
                 MessageBox.Show(this, "회원가입에 성공했습니다! 로그인해 주세요.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -204,7 +203,6 @@ namespace Dimiwords_Client_CS
             {
                 var message = json["message"].ToString();
                 Console.WriteLine(message);
-                //var message = result.Split(new string[] { "\"message\":\"" }, StringSplitOptions.None)[1].Split(new string[] { "\"}" }, StringSplitOptions.None)[0];
                 MessageBox.Show(this, $"계정 생성에 실패했습니다. {(message == "User exists" ? "같은 이메일의 사용자가 이미 존재합니다." : "회원가입 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // 어셈블리에 대한 일반 정보는 다음 특성 집합을 통해 
 // 제어됩니다. 어셈블리와 관련된 정보를 수정하려면
 // 이러한 특성 값을 변경하세요.
 [assembly: AssemblyTitle("Dimiwords-Client-CS")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("C#으로 개발한 디미워드 (dimiwords.tk)의 클라이언트 프로그램입니다.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CIVAR")]
 [assembly: AssemblyProduct("Dimiwords-Client-CS")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright ©  2019. CIVAR. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

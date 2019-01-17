@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dimiwords_Client_CS
+﻿namespace Dimiwords_Client_CS
 {
     public struct Wordbooks
     {
         public string[] ko;
-        public string en;
+        public string en, id;
 
-        public Wordbooks(string[] Ko, string En)
+        public Wordbooks(string[] Ko, string En, string Id)
         {
             ko = Ko;
             en = En;
+            id = Id;
         }
     }
 }

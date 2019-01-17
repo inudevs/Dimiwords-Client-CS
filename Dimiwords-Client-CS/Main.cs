@@ -395,11 +395,11 @@ namespace Dimiwords_Client_CS
                 var Wordbooks = new Wordbooks[words.Count];
                 for (var i = 0; i < words.Count; i++)
                 {
-                    Wordbooks[i] = new Wordbooks(JArray.FromObject(words[i]["ko"]).ToObject<string[]>(), words[i]["en"].ToString());
+                    Wordbooks[i] = new Wordbooks(JArray.FromObject(words[i]["ko"]).ToObject<string[]>(), words[i]["en"].ToString(), words[i]["_id"].ToString());
                 }
                 var ran = new Random();
                 Wordbooks = Wordbooks.OrderBy(x => ran.Next()).ToArray();
-                Invoke((MethodInvoker)delegate () { new Learn(Wordbooks, this).Show(); Hide(); });
+                Invoke((MethodInvoker)delegate () { new Learn(Wordbooks, this, user_data).Show(); Hide(); });
             }
             //한글 뜻 맞추기
             else
