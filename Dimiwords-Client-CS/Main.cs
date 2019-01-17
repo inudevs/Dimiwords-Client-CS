@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
@@ -152,7 +153,7 @@ namespace Dimiwords_Client_CS
                 else
                 {
                     //var Booksdata = result.Split(new string[] { "\"docs\":[" }, StringSplitOptions.None)[1].Split(new string[] { "}],\"total\"" }, StringSplitOptions.None)[0];
-                    var Booksdata = JArray.Parse(json["result"]["docs"].ToString());
+                    var Booksdata = JArray.FromObject(json["result"]["docs"]);
                     //처음엔 전체 단어장 수를 가져온다
                     //var Bookscount = int.Parse(result.Split(new string[] { "\"total\":" }, StringSplitOptions.None)[1].Split(',')[0]);
                     var Bookscount = (int)json["result"]["total"];
@@ -178,7 +179,8 @@ namespace Dimiwords_Client_CS
                         var intro = Booksdata[i]["intro"].ToString();
                         var wordscount = Booksdata[i]["len"].ToString();
                         var user = Booksdata[i]["user"].ToString();
-                        var item = new ListViewItem(new string[] { "    口    ", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user });
+                        var id = Booksdata[i]["_id"].ToString();
+                        var item = new ListViewItem(new string[] { "    口    ", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user, id });
                         Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
                     }
                     Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = wordbookspage.ToString(); });
@@ -360,7 +362,7 @@ namespace Dimiwords_Client_CS
                 {
                     //전체 json 중에 유저 정보만 가져온다
                     //var Userdata = result.Split(new string[] { "\"docs\":[" }, StringSplitOptions.None)[1].Split(']')[0];
-                    var Userdata = JArray.Parse(json["result"]["docs"].ToString());
+                    var Userdata = JArray.FromObject(json["result"]["docs"]);
                     //처음엔 전체 유저 수를 가져온다
                     //var Usercount = int.Parse(result.Split(new string[] { "\"total\":" }, StringSplitOptions.None)[1].Split(',')[0]);
                     var Usercount = (int)json["result"]["total"];
@@ -462,18 +464,105 @@ namespace Dimiwords_Client_CS
                 Monitor.Exit(ranklock);
         }
 
-        private void Playwordbooks(int i, bool isEn)
+        private void Playwordbooks(object isEn)
         {
             Discord.StateUpdate("단어 외우는 중...");
-            if (isEn)
+            //영단어 맞추기
+            if ((bool)isEn)
             {
-                //영단어 맞추기
+                var result = "";
+                var text = "";
+                Invoke((MethodInvoker)delegate () { text = listView2.SelectedItems[0].SubItems[5].Text; });
+                var id = text;
+                //Console.WriteLine(id);
+                //var Data = Encoding.UTF8.GetBytes($"{{\"token\":\"{user_data.token}\"}}");
+                //인터넷에 연결한다 (GET형식이므로 주소에서 데이터를 넘겨준다)
+                var req = (HttpWebRequest)WebRequest.Create($"https://dimiwords.tk:5000/api/get/wordbook/{id}");
+                //데이터 받기
+                using (var res = (HttpWebResponse)req.GetResponse())
+                {
+                    //너의 상태가 괜찮아 보이는군!
+                    if (res.StatusCode == HttpStatusCode.OK)
+                    {
+                        //받을 준비를 할께!
+                        using (var resStream = res.GetResponseStream())
+                        {
+                            //StreamReader로 stream의 데이터를 읽는다
+                            using (var sr = new StreamReader(resStream))
+                            {
+                                //받았다!
+                                result = sr.ReadToEnd();
+                                //다 받았으니 나머지는 정리할께
+                                resStream.Close();
+                            }
+                        }
+                    }
+                    //이것도 정리
+                    res.Close();
+                }
+                var json = JObject.Parse(result);
+                var words = JArray.FromObject(json["wordbook"]["words"]);
+                var Wordbooks = new Wordbooks[words.Count];
+                for (var i = 0; i < words.Count; i++)
+                {
+                    Wordbooks[i] = new Wordbooks(JArray.FromObject(words[i]["ko"]).ToObject<string[]>(), words[i]["en"].ToString());
+                }
+                var ran = new Random();
+                Wordbooks = Wordbooks.OrderBy(x => ran.Next()).ToArray();
+                for (var i = 0; i < words.Count; i++)
+                {
+                    var ko = "";
+                    for (var ia = 0; ia < Wordbooks[i].ko.Count(); ia++)
+                    {
+                        var ind = "";
+                        if (ia > 0)
+                            ind = ", ";
+                        ko += $"{ind}{Wordbooks[i].ko[ia]}";
+                    }
+                    //이 아래부턴 대충 해보는 코딩 (알고리즘 구현)
+                    /*
+                        bool Skip = false;
+                        ///////////////////////////////
+                        Skip = false;
+                        while (!Skip)
+                        {
+                            label = ko;
+                            if (textBox.Text == en)
+                            {
+                                progress++;
+                                submit++;
+                                accept++;
+                                break;
+                            }
+                        }
+                        ///////////////////////////////
+                        button click
+                        {
+                            submit++;
+                            Skip = true;
+                        }
+                    */
+                    //MessageBox.Show($"한국어 : {ko}\n영어 : {Wordbooks[i].en}");
+                }
             }
+            //한글 뜻 맞추기
             else
             {
-                //한글 뜻 맞추기
+
             }
             //단어장 가져오고 단어 랜덤으로 띄우기
+        }
+
+        struct Wordbooks
+        {
+            public string[] ko;
+            public string en;
+
+            public Wordbooks(string[] Ko, string En)
+            {
+                ko = Ko;
+                en = En;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -528,7 +617,7 @@ namespace Dimiwords_Client_CS
         {
             if (MessageBox.Show(this, $"단어장 \"{listView2.SelectedItems[0].SubItems[1].Text}\"를 공부하시겠습니까?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                Playwordbooks(listView2.SelectedIndices[0], MessageBox.Show(this, $"영단어 맞추기로 공부하시겠습니까?\n(Yes : 영단어 맞추기 No : 한글 뜻 맞추기)", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes);
+                new Thread(new ParameterizedThreadStart(Playwordbooks)) { IsBackground = true }.Start(MessageBox.Show(this, $"영단어 맞추기로 공부하시겠습니까?\n(Yes : 영단어 맞추기 No : 한글 뜻 맞추기)", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes);
             }
         }
 
