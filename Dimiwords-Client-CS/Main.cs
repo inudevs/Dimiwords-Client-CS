@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 
 namespace Dimiwords_Client_CS
 {
@@ -23,13 +22,40 @@ namespace Dimiwords_Client_CS
             user_data = user;
             //로그인 창을 제대로 종료하기 위해 인자로 넘겨받는다
             loginform = login;
+            //유저 정보
+            label4.Text = user.name;
+            var department = string.Empty;
+            switch (user.department)
+            {
+                case "0":
+                    department = "EB";
+                    label5.ForeColor = Color.FromArgb(0x424242);
+                    break;
+                case "1":
+                    department = "DC";
+                    label5.ForeColor = Color.FromArgb(0xFF0080);
+                    break;
+                case "2":
+                    department = "WP";
+                    label5.ForeColor = Color.FromArgb(0x9A2EFE);
+                    break;
+                case "3":
+                    department = "HD";
+                    label5.ForeColor = Color.FromArgb(0x3A01DF);
+                    break;
+                default:
+                    Close();
+                    return;
+            }
+            label5.Text = department;
+            //이 아래는 리스트뷰의 크기를 늘리기 위해 쓰레기값을 가진 이미지 크기를 넣어준다
             var dummy = new ImageList
             {
                 ImageSize = new Size(1, 20)
             };
             var dummy2 = new ImageList
             {
-                ImageSize = new Size(1, 40)
+                ImageSize = new Size(1, 45)
             };
             listView1.SmallImageList = dummy;
             listView2.SmallImageList = dummy2;
@@ -155,7 +181,7 @@ namespace Dimiwords_Client_CS
                         var item = new ListViewItem(new string[] { wordscount, name == string.Empty ? "제목없음" : name, intro == string.Empty ? "설명없음" : intro, user });
                         Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
                     }
-                    Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = rankpage.ToString(); });
+                    Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = wordbookspage.ToString(); });
                 }
             }
             else

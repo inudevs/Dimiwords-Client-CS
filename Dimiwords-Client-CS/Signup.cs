@@ -130,7 +130,7 @@ namespace Dimiwords_Client_CS
 
         private void button5_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text.Contains(" ") || textBox1.Text == "이메일" || textBox2.Text.Contains(" ") || textBox2.Text == "비밀번호" || textBox3.Text.Contains(" ") || textBox3.Text == "이름(실명)" || textBox4.Text.Contains(" ") || textBox4.Text == "한 줄 소개")
+            if (textBox1.Text.Contains("\\") || textBox2.Text.Contains("\\") || textBox1.Text.Contains(" ") || textBox1.Text == "이메일" || textBox2.Text.Contains(" ") || textBox2.Text == "비밀번호" || textBox3.Text.Contains(" ") || textBox3.Text == "이름(실명)" || textBox4.Text.Contains(" ") || textBox4.Text == "한 줄 소개")
             {
                 MessageBox.Show(this, "모든 필드에 값을 제대로 입력해 주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

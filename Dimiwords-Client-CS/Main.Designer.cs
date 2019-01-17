@@ -51,6 +51,8 @@
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -112,7 +114,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(857, 525);
+            this.tabPage2.Size = new System.Drawing.Size(857, 528);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Wordbooks";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -137,6 +139,7 @@
             this.columnHeader9});
             this.listView2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.listView2.Location = new System.Drawing.Point(6, 6);
+            this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
             this.listView2.Size = new System.Drawing.Size(845, 484);
             this.listView2.TabIndex = 6;
@@ -195,7 +198,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(857, 525);
+            this.tabPage3.Size = new System.Drawing.Size(857, 528);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Scoreboard";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -276,11 +279,32 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // label4
+            // 
+            this.label4.Font = new System.Drawing.Font("맑은 고딕", 13F, System.Drawing.FontStyle.Bold);
+            this.label4.Location = new System.Drawing.Point(223, 7);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(615, 24);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "회원 이름";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label5
+            // 
+            this.label5.Font = new System.Drawing.Font("맑은 고딕", 13F, System.Drawing.FontStyle.Bold);
+            this.label5.Location = new System.Drawing.Point(832, 7);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(41, 24);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "과";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(889, 575);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.tabControl1);
             this.Name = "Main";
             this.Text = "Main";
@@ -322,5 +346,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }

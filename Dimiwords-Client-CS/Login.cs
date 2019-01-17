@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -26,6 +27,14 @@ namespace Dimiwords_Client_CS
             {
                 //메세지박스를 띄워 사용자에게 dll이 없음을 알림
                 MessageBox.Show(this, "discord-rpc.dll이 존재하지 않습니다. dll이 제대로 존재하는지 확인해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //dll이 없으면 정상적으로 작동하지 않음으로 종료
+                Close();
+                return;
+            }
+            if (!File.Exists("Newtonsoft.Json.dll"))
+            {
+                //메세지박스를 띄워 사용자에게 dll이 없음을 알림
+                MessageBox.Show(this, "Newtonsoft.Json.dll이 존재하지 않습니다. dll이 제대로 존재하는지 확인해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 //dll이 없으면 정상적으로 작동하지 않음으로 종료
                 Close();
                 return;
@@ -58,7 +67,7 @@ namespace Dimiwords_Client_CS
         private void button1_Click(object sender, EventArgs e)
         {
             //이메일, 비밀번호가 워터마크 텍스트인지 확인
-            if (textBox1.Text == "이메일" || textBox2.Text == "비밀번호" || textBox1.Text.Contains(" ") || textBox2.Text.Contains(" "))
+            if (textBox1.Text == "이메일" || textBox2.Text == "비밀번호" || textBox1.Text.Contains(" ") || textBox2.Text.Contains(" ") || textBox1.Text.Contains("\\") || textBox2.Text.Contains("\\"))
             {
                 MessageBox.Show(this, "로그인 정보가 맞는지 확인해주세요.", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 //아래 코드를 실행하지 않음
@@ -78,12 +87,21 @@ namespace Dimiwords_Client_CS
             req.ContentLength = Data.Length;
             //using = 용량이 큰 자료형에 존재하는 함수인 Dispose를 자동으로 실행
             //보낼 준비를 할께!
-            using (var reqStream = req.GetRequestStream())
+            try
             {
-                //보낸다!
-                reqStream.Write(Data, 0, Data.Length);
-                //다 보냈으니 나머지는 정리할께
-                reqStream.Close();
+                using (var reqStream = req.GetRequestStream())
+                {
+                    //보낸다!
+                    reqStream.Write(Data, 0, Data.Length);
+                    //다 보냈으니 나머지는 정리할께
+                    reqStream.Close();
+                }
+            }
+            catch (WebException ex)
+            {
+                MessageBox.Show(this, $"서버에 제대로 연결하지 못했습니다. {ex.Message}\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
+                return;
             }
             //이제 받을 준비를 할께!
             using (var res = (HttpWebResponse)req.GetResponse())
@@ -107,22 +125,32 @@ namespace Dimiwords_Client_CS
                 res.Close();
             }
             //json 읽기
-            var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
+            //var success = result.Split(new string[] { "\"success\":" }, StringSplitOptions.None)[1].Split(',')[0];
+            var json = JObject.Parse(result);
+            var success = (bool)json["success"];
             //로그인에 성공했다면
-            if (Convert.ToBoolean(success))
+            if (success)
             {
                 //아이디 자동 저장
                 Properties.Settings.Default.ID = textBox1.Text;
                 Properties.Settings.Default.Save();
                 //나머지 json 읽기
-                var name = result.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                var intro = result.Split(new string[] { "\"intro\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                var email = result.Split(new string[] { "\"email\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                var department = result.Split(new string[] { "\"department\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                var points = result.Split(new string[] { "\"points\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                var submit = result.Split(new string[] { "\"submit\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                var accept = result.Split(new string[] { "\"accept\":" }, StringSplitOptions.None)[1].Split(',')[0];
-                var token = result.Split(new string[] { "\"token\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                var name = json["user"]["name"].ToString();
+                var intro = json["user"]["intro"].ToString();
+                var email = json["user"]["email"].ToString();
+                var department = json["user"]["department"].ToString();
+                var points = json["user"]["points"].ToString();
+                var submit = json["user"]["submit"].ToString();
+                var accept = json["user"]["accept"].ToString();
+                var token = json["token"].ToString();
+                //var name = result.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                //var intro = result.Split(new string[] { "\"intro\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                //var email = result.Split(new string[] { "\"email\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                //var department = result.Split(new string[] { "\"department\":" }, StringSplitOptions.None)[1].Split(',')[0];
+                //var points = result.Split(new string[] { "\"points\":" }, StringSplitOptions.None)[1].Split(',')[0];
+                //var submit = result.Split(new string[] { "\"submit\":" }, StringSplitOptions.None)[1].Split(',')[0];
+                //var accept = result.Split(new string[] { "\"accept\":" }, StringSplitOptions.None)[1].Split(',')[0];
+                //var token = result.Split(new string[] { "\"token\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
                 //로그인 창을 종료하고 메인 창을 띄운다 User 정보와 함께
                 new Main(new User(name, intro, email, department, points, submit, accept, token), this).Show();
                 Hide();
@@ -131,7 +159,8 @@ namespace Dimiwords_Client_CS
             else
             {
                 //어째서 실패했는지 가져온다
-                var error = result.Split(new string[] { "\"error\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                //var error = result.Split(new string[] { "\"error\":\"" }, StringSplitOptions.None)[1].Split('"')[0];
+                var error = json["error"].ToString();
                 //실패한 이유를 사용자에게 알려준다
                 MessageBox.Show(this, $"{(error == "No User" ? "로그인 정보가 맞는지 확인해주세요." : "로그인 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
