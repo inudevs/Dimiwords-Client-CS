@@ -35,9 +35,9 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label3 = new System.Windows.Forms.Label();
             this.listView2 = new System.Windows.Forms.ListView();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
@@ -53,6 +53,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -114,7 +115,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(857, 528);
+            this.tabPage2.Size = new System.Drawing.Size(857, 525);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Wordbooks";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -131,14 +132,16 @@
             // 
             // listView2
             // 
+            this.listView2.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.listView2.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader6,
-            this.columnHeader7,
+            this.columnHeader10,
             this.columnHeader8,
+            this.columnHeader7,
+            this.columnHeader6,
             this.columnHeader9});
             this.listView2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.listView2.Location = new System.Drawing.Point(6, 6);
+            this.listView2.Location = new System.Drawing.Point(6, 4);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
             this.listView2.Size = new System.Drawing.Size(845, 484);
@@ -146,22 +149,23 @@
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
             // 
-            // columnHeader6
+            // columnHeader8
             // 
-            this.columnHeader6.Text = "Words count";
-            this.columnHeader6.Width = 82;
+            this.columnHeader8.Text = "Name";
+            this.columnHeader8.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader8.Width = 347;
             // 
             // columnHeader7
             // 
-            this.columnHeader7.Text = "Name";
+            this.columnHeader7.Text = "Intro";
             this.columnHeader7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeader7.Width = 290;
             // 
-            // columnHeader8
+            // columnHeader6
             // 
-            this.columnHeader8.Text = "Intro";
-            this.columnHeader8.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader8.Width = 347;
+            this.columnHeader6.Text = "Words count";
+            this.columnHeader6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader6.Width = 82;
             // 
             // columnHeader9
             // 
@@ -198,7 +202,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(857, 528);
+            this.tabPage3.Size = new System.Drawing.Size(857, 525);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Scoreboard";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -223,7 +227,7 @@
             this.columnHeader4,
             this.columnHeader5});
             this.listView1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.listView1.Location = new System.Drawing.Point(6, 6);
+            this.listView1.Location = new System.Drawing.Point(6, 4);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(845, 484);
             this.listView1.TabIndex = 3;
@@ -298,6 +302,11 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "과";
             // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "";
+            this.columnHeader10.Width = 0;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -348,5 +357,6 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
     }
 }

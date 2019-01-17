@@ -174,11 +174,11 @@ namespace Dimiwords_Client_CS
                     //단어장 페이지의 단어장 수 만큼 반복
                     for (var i = 0; i < Bookscount; i++)
                     {
-                        var wordscount = Booksdata[i]["len"].ToString();
                         var name = Booksdata[i]["name"].ToString();
                         var intro = Booksdata[i]["intro"].ToString();
+                        var wordscount = Booksdata[i]["len"].ToString();
                         var user = Booksdata[i]["user"].ToString();
-                        var item = new ListViewItem(new string[] { wordscount, name == string.Empty ? "제목없음" : name, intro == string.Empty ? "설명없음" : intro, user });
+                        var item = new ListViewItem(new string[] { string.Empty, name == string.Empty ? "제목없음" : name, intro == string.Empty ? "설명없음" : intro, wordscount, user });
                         Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
                     }
                     Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = wordbookspage.ToString(); });
