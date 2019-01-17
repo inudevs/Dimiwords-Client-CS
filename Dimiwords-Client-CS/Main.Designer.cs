@@ -132,7 +132,6 @@
             // 
             // listView2
             // 
-            this.listView2.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.listView2.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.listView2.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader10,
@@ -148,12 +147,13 @@
             this.listView2.TabIndex = 6;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
+            this.listView2.ItemActivate += new System.EventHandler(this.listView2_ItemActivate);
             // 
             // columnHeader8
             // 
             this.columnHeader8.Text = "Name";
             this.columnHeader8.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnHeader8.Width = 347;
+            this.columnHeader8.Width = 287;
             // 
             // columnHeader7
             // 
@@ -285,6 +285,7 @@
             // 
             // label4
             // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label4.Font = new System.Drawing.Font("맑은 고딕", 13F, System.Drawing.FontStyle.Bold);
             this.label4.Location = new System.Drawing.Point(223, 7);
             this.label4.Name = "label4";
@@ -295,6 +296,7 @@
             // 
             // label5
             // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label5.Font = new System.Drawing.Font("맑은 고딕", 13F, System.Drawing.FontStyle.Bold);
             this.label5.Location = new System.Drawing.Point(832, 7);
             this.label5.Name = "label5";
@@ -304,8 +306,7 @@
             // 
             // columnHeader10
             // 
-            this.columnHeader10.Text = "";
-            this.columnHeader10.Width = 0;
+            this.columnHeader10.Text = " Select";
             // 
             // Main
             // 

@@ -178,7 +178,7 @@ namespace Dimiwords_Client_CS
                         var intro = Booksdata[i]["intro"].ToString();
                         var wordscount = Booksdata[i]["len"].ToString();
                         var user = Booksdata[i]["user"].ToString();
-                        var item = new ListViewItem(new string[] { "", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user });
+                        var item = new ListViewItem(new string[] { "    口    ", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user });
                         Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
                     }
                     Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = wordbookspage.ToString(); });
@@ -462,6 +462,20 @@ namespace Dimiwords_Client_CS
                 Monitor.Exit(ranklock);
         }
 
+        private void Playwordbooks(int i, bool isEn)
+        {
+            Discord.StateUpdate("단어 외우는 중...");
+            if (isEn)
+            {
+                //영단어 맞추기
+            }
+            else
+            {
+                //한글 뜻 맞추기
+            }
+            //단어장 가져오고 단어 랜덤으로 띄우기
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             //멀티 스레딩
@@ -508,6 +522,14 @@ namespace Dimiwords_Client_CS
         private void button4_Click(object sender, EventArgs e)
         {
             new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(true);
+        }
+
+        private void listView2_ItemActivate(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(this, $"단어장 \"{listView2.SelectedItems[0].SubItems[1].Text}\"를 공부하시겠습니까?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                Playwordbooks(listView2.SelectedIndices[0], MessageBox.Show(this, $"영단어 맞추기로 공부하시겠습니까?\n(Yes : 영단어 맞추기 No : 한글 뜻 맞추기)", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes);
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
