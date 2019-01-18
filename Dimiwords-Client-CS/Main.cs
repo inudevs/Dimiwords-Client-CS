@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,9 +12,12 @@ namespace Dimiwords_Client_CS
 {
     public partial class Main : Form
     {
-        private int rankpage = 1, wordbookspage = 1;
-
+        private int rankpage = 1, wordbookspage = 1, wordspage = 1;
+        private List<string> wordsList = new List<string>();
         private User user_data;
+
+        //스레드를 한개씩만 돌리기 위한 오브젝트
+        private object ranklock = new object(), wordslock = new object(), wordbookslock = new object();
 
         public Main(User user)
         {
@@ -56,10 +60,8 @@ namespace Dimiwords_Client_CS
                 ImageSize = new Size(1, 45)
             };
             listView1.SmallImageList = dummy;
-            listView2.SmallImageList = dummy2;
+            listView2.SmallImageList = listView3.SmallImageList = dummy2;
         }
-
-        private object wordbookslock = new object();
 
         private void GetWordbooks(object next)
         {
@@ -155,7 +157,6 @@ namespace Dimiwords_Client_CS
                     //단어장을 그냥 갱신하면 순차적으로 업데이트 되므로 한번에 업데이트 되도록 BeginUpdate 메서드 사용
                     //페이지 형식이기 때문에 Clear를 사용해 전 페이지는 삭제
                     Invoke((MethodInvoker)delegate () { listView2.BeginUpdate(); listView2.Items.Clear(); });
-                    //MessageBox.Show(Booksdata[0].ToString());
                     //단어장 페이지의 단어장 수 만큼 반복
                     for (var i = 0; i < Bookscount; i++)
                     {
@@ -164,7 +165,7 @@ namespace Dimiwords_Client_CS
                         var wordscount = Booksdata[i]["len"].ToString();
                         var user = Booksdata[i]["user"].ToString();
                         var id = Booksdata[i]["_id"].ToString();
-                        var item = new ListViewItem(new string[] { "    口    ", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user, id });
+                        var item = new ListViewItem(new string[] { "    □    ", string.IsNullOrEmpty(name) ? "제목없음" : name, string.IsNullOrEmpty(intro) ? "설명없음" : intro, wordscount, user, id });
                         Invoke((MethodInvoker)delegate () { listView2.Items.Add(item); });
                     }
                     Invoke((MethodInvoker)delegate () { listView2.EndUpdate(); label3.Text = wordbookspage.ToString(); });
@@ -177,9 +178,6 @@ namespace Dimiwords_Client_CS
             if (Monitor.IsEntered(wordbookslock))
                 Monitor.Exit(wordbookslock);
         }
-
-        //스레드를 한개씩만 돌리기 위한 오브젝트
-        private object ranklock = new object();
 
         /// <summary>
         /// 랭크를 얻어오는 메서드
@@ -346,6 +344,150 @@ namespace Dimiwords_Client_CS
                 Monitor.Exit(ranklock);
         }
 
+        private void GetWords(object next)
+        {
+            Monitor.Enter(wordslock);
+            var result = "";
+            //처음 페이지, 마지막 페이지 구분
+            //이전, 다음 구분
+            //json 읽기
+            if (next != null)
+            {
+                //true면
+                if ((bool)next)
+                    //+ 1을 해준다
+                    wordspage++;
+                //아니면
+                else
+                {
+                    //- 1을 해준다
+                    wordspage--;
+                }
+            }
+            //인터넷에 연결한다 (GET형식이므로 주소에서 데이터를 넘겨준다)
+            var req = (HttpWebRequest)WebRequest.Create($"https://dimiwords.tk:5000/api/list/words?page={wordspage}");
+            //데이터 받기
+            using (var res = (HttpWebResponse)req.GetResponse())
+            {
+                //너의 상태가 괜찮아 보이는군!
+                if (res.StatusCode == HttpStatusCode.OK)
+                {
+                    //받을 준비를 할께!
+                    using (var resStream = res.GetResponseStream())
+                    {
+                        //StreamReader로 stream의 데이터를 읽는다
+                        using (var sr = new StreamReader(resStream))
+                        {
+                            //받았다!
+                            result = sr.ReadToEnd();
+                            //다 받았으니 나머지는 정리할께
+                            resStream.Close();
+                        }
+                    }
+                }
+                //이것도 정리
+                res.Close();
+            }
+            var json = JObject.Parse(result);
+            //성공 여부를 파싱
+            var success = (bool)json["success"];
+            //true 또는 false를 가지고 있는 string변수를 bool의 형태로 바꿔준다
+            if (success)
+            {
+                //전체 페이지 수를 파싱
+                var pages_count = (int)json["result"]["pages"];
+                //현재 페이지가 1이면 이전 페이지 비활성화
+                if (wordspage == 1)
+                {
+                    Invoke((MethodInvoker)delegate () { button7.Enabled = false; });
+                }
+                else
+                {
+                    //현재 페이지가 마지막 페이지면 다음 페이지 비활성화
+                    if (wordspage == pages_count)
+                    {
+                        Invoke((MethodInvoker)delegate () { button6.Enabled = false; });
+                    }
+                    else
+                    {
+                        //둘다 아니라면 둘다 활성화
+                        Invoke((MethodInvoker)delegate () { button7.Enabled = button6.Enabled = true; });
+                    }
+                }
+                if (wordspage < 1)
+                {
+                    //page가 1보다 낮아지는 경우는 이전버튼을 연타하여 같은 메서드가 반복될때이다
+                    //그러므로 page를 1로 고정하고 아래의 소스들은 반복하지 않는다
+                    wordspage = 1;
+                    //첫 페이지면 이전 페이지 비활성화
+                    Invoke((MethodInvoker)delegate () { button7.Enabled = false; });
+                }
+                else if (wordspage > pages_count)
+                {
+                    //위와 같은 경우이다
+                    wordspage = pages_count;
+                    //마지막 페이지면 다음 페이지 비활성화
+                    Invoke((MethodInvoker)delegate () { button6.Enabled = false; });
+                }
+                else
+                {
+                    //전체 json 중에 단어 정보만 가져온다
+                    var Wordsdata = JArray.FromObject(json["result"]["docs"]);
+                    //처음엔 전체 단어 수를 가져온다
+                    var Wordscount = (int)json["result"]["total"];
+                    //페이지가 마지막 페이지라면
+                    if (wordspage == pages_count)
+                    {
+                        //마지막 페이지의 단어 수를 계산한다
+                        Wordscount -= (pages_count - 1) * 9;
+                    }
+                    else
+                    {
+                        //아니면 그냥 9개
+                        Wordscount = 9;
+                    }
+                    //랭킹을 그냥 갱신하면 순차적으로 업데이트 되므로 한번에 업데이트 되도록 BeginUpdate 메서드 사용
+                    //페이지 형식이기 때문에 Clear를 사용해 전 페이지는 삭제
+                    Invoke((MethodInvoker)delegate () { listView3.BeginUpdate(); listView3.Items.Clear(); });
+                    var check = new List<int>();
+                    //단어 페이지의 단어 수 만큼 반복
+                    for (var i = 0; i < Wordscount; i++)
+                    {
+                        //json 읽기
+                        var ko = string.Join(", ", JArray.FromObject(Wordsdata[i]["ko"]).ToObject<string[]>());
+                        var en = Wordsdata[i]["en"].ToString();
+                        var id = Wordsdata[i]["_id"].ToString();
+                        //단어 갱신용 변수
+                        var item = new ListViewItem(new string[] { en, ko, id });
+                        var wordsArray = wordsList.ToArray();
+                        Invoke((MethodInvoker)delegate ()
+                        {
+                            //갱신
+                            listView3.Items.Add(item);
+                            if (wordsArray.Contains(id))
+                            {
+                                check.Add(i);
+                            }
+                        });
+                    }
+                    //업데이트가 끝남을 알려 데이터 업데이트를 완료함
+                    //label에 현재 페이지를 알려줌
+                    Invoke((MethodInvoker)delegate ()
+                    {
+                        var check_arr = check.ToArray();
+                        for (var i = 0; i < check_arr.Count(); i++)
+                        {
+                            listView3.Items[check_arr[i]].Checked = true;
+                        }
+                        listView3.EndUpdate();
+                        label2.Text = wordspage.ToString();
+                    });
+                }
+            }
+            if (Monitor.IsEntered(wordslock))
+                Monitor.Exit(wordslock);
+        }
+
         private void Playwordbooks(object isEn)
         {
             Discord.StateUpdate("단어 외우는 중...");
@@ -416,6 +558,7 @@ namespace Dimiwords_Client_CS
             //멀티 스레딩
             new Thread(new ParameterizedThreadStart(GetRank)) { IsBackground = true }.Start(null);
             new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(null);
+            new Thread(new ParameterizedThreadStart(GetWords)) { IsBackground = true }.Start(null);
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -431,6 +574,32 @@ namespace Dimiwords_Client_CS
                 case 2:
                     Discord.StateUpdate("랭킹 살펴 보는 중...");
                     break;
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            new Thread(new ParameterizedThreadStart(GetWords)) { IsBackground = true }.Start(false);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            new Thread(new ParameterizedThreadStart(GetWords)) { IsBackground = true }.Start(true);
+        }
+
+        private void listView3_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            var id = e.Item.SubItems[2].Text;
+            //MessageBox.Show(id);
+            var page = wordspage.ToString();
+            if (wordsList.Contains(id) && !e.Item.Checked)
+            {
+                //Console.WriteLine(wordsList[0] + " " + list);
+            }
+            else if (e.Item.Checked)
+            {
+                wordsList.Add(id);
+                //Console.WriteLine(wordsList[0][1] + " " + list[1]);
             }
         }
 
@@ -454,7 +623,7 @@ namespace Dimiwords_Client_CS
 
         private void button3_Click(object sender, EventArgs e)
         {
-            //단어 추가
+            //단어장 추가
         }
     }
 }

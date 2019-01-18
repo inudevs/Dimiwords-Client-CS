@@ -15,6 +15,11 @@ namespace Dimiwords_Client_CS
             Application.SetCompatibleTextRenderingDefault(false);
             Login login = new Login();
             login.ShowDialog();
+            try
+            {
+                login.user.ToString();
+            }
+            catch { return; }
             Application.Run(new Main(login.user));
             //Application.Run(new Login());
         }
