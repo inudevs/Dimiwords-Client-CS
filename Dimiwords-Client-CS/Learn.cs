@@ -91,7 +91,8 @@ namespace Dimiwords_Client_CS
                         }
                         //json 읽기
                         var json = JObject.Parse(result);
-                        if ((bool)json["success"])
+                        var success = (bool)json["success"];
+                        if (success)
                         {
                             accept++;
                             break;
@@ -164,7 +165,8 @@ namespace Dimiwords_Client_CS
                         skip = false;
                         //json 읽기
                         var json = JObject.Parse(result);
-                        if ((bool)json["success"])
+                        var success = (bool)json["success"];
+                        if (success)
                         {
                             MessageBox.Show("잘못된 요청입니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             Close();

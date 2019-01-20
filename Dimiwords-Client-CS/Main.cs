@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -347,6 +348,7 @@ namespace Dimiwords_Client_CS
         private void GetWords(object next)
         {
             Monitor.Enter(wordslock);
+            Invoke((MethodInvoker)delegate () { button9.Enabled = false; });
             var result = "";
             //처음 페이지, 마지막 페이지 구분
             //이전, 다음 구분
@@ -446,7 +448,7 @@ namespace Dimiwords_Client_CS
                         //아니면 그냥 9개
                         Wordscount = 9;
                     }
-                    //랭킹을 그냥 갱신하면 순차적으로 업데이트 되므로 한번에 업데이트 되도록 BeginUpdate 메서드 사용
+                    //단어를 그냥 갱신하면 순차적으로 업데이트 되므로 한번에 업데이트 되도록 BeginUpdate 메서드 사용
                     //페이지 형식이기 때문에 Clear를 사용해 전 페이지는 삭제
                     Invoke((MethodInvoker)delegate () { listView3.BeginUpdate(); listView3.Items.Clear(); });
                     var check = new List<int>();
@@ -539,6 +541,115 @@ namespace Dimiwords_Client_CS
 
             }
         }
+
+        private void SearchWords()
+        {
+            if (!(textBox1.Text == "" || textBox1.Text == "영문으로 단어를 검색해보세요." || textBox1.Text.Contains("\\") || textBox1.Text.Contains(" ")))
+            {
+                Invoke((MethodInvoker)delegate () { button9.Enabled = true; });
+                //결과값 변수를 비어져 있는 string자료형으로 선언
+                var result = "";
+                //json형태로 Byte[]자료형 선언
+                var Data = Encoding.UTF8.GetBytes($"{{\"token\":\"{user_data.token}\",\"query\":\"{textBox1.Text}\"}}");
+                //로그인 서버
+                var req = (HttpWebRequest)WebRequest.Create("https://dimiwords.tk:5000/api/search/words");
+                //Post 형태로
+                req.Method = "POST";
+                //json 보낸다
+                req.ContentType = "application/json";
+                //길이는 요만큼
+                req.ContentLength = Data.Length;
+                //using = 용량이 큰 자료형에 존재하는 함수인 Dispose를 자동으로 실행
+                //보낼 준비를 할께!
+                try
+                {
+                    using (var reqStream = req.GetRequestStream())
+                    {
+                        //보낸다!
+                        reqStream.Write(Data, 0, Data.Length);
+                        //다 보냈으니 나머지는 정리할께
+                        reqStream.Close();
+                    }
+                }
+                catch (WebException ex)
+                {
+                    MessageBox.Show(this, $"서버에 제대로 연결하지 못했습니다.\n{ex.Message}\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Close();
+                    return;
+                }
+                //이제 받을 준비를 할께!
+                using (var res = (HttpWebResponse)req.GetResponse())
+                {
+                    //너의 상태가 괜찮아 보이는군!
+                    if (res.StatusCode == HttpStatusCode.OK)
+                    {
+                        //받을 준비를 할께!
+                        using (var resStream = res.GetResponseStream())
+                        {
+                            using (var sr = new StreamReader(resStream))
+                            {
+                                //받았다!
+                                result = sr.ReadToEnd();
+                                //다 받았으니 나머지는 정리할께
+                                resStream.Close();
+                            }
+                        }
+                    }
+                    //이것도 정리
+                    res.Close();
+                }
+                //json 읽기
+                var json = JObject.Parse(result);
+                var success = (bool)json["success"];
+                if (success)
+                {
+                    //전체 json 중에 단어 정보만 가져온다
+                    var Wordsdata = JArray.FromObject(json["result"]["docs"]);
+                    //처음엔 단어 수를 가져온다
+                    var Wordscount = (int)json["result"]["total"];
+                    if (Wordscount > 9)
+                    {
+                        Wordscount = 9;
+                    }
+                    //단어를 그냥 갱신하면 순차적으로 업데이트 되므로 한번에 업데이트 되도록 BeginUpdate 메서드 사용
+                    //페이지 형식이기 때문에 Clear를 사용해 전 페이지는 삭제
+                    Invoke((MethodInvoker)delegate () { listView3.BeginUpdate(); listView3.Items.Clear(); });
+                    var check = new List<int>();
+                    //단어 페이지의 단어 수 만큼 반복
+                    for (var i = 0; i < Wordscount; i++)
+                    {
+                        //json 읽기
+                        var ko = string.Join(", ", JArray.FromObject(Wordsdata[i]["ko"]).ToObject<string[]>());
+                        var en = Wordsdata[i]["en"].ToString();
+                        var id = Wordsdata[i]["_id"].ToString();
+                        //단어 갱신용 변수
+                        var item = new ListViewItem(new string[] { en, ko, id });
+                        var wordsArray = wordsList.ToArray();
+                        Invoke((MethodInvoker)delegate ()
+                        {
+                            //갱신
+                            listView3.Items.Add(item);
+                            if (wordsArray.Contains(id))
+                            {
+                                check.Add(i);
+                            }
+                        });
+                    }
+                    //업데이트가 끝남을 알려 데이터 업데이트를 완료함
+                    //label을 비움
+                    Invoke((MethodInvoker)delegate ()
+                    {
+                        var check_arr = check.ToArray();
+                        for (var i = 0; i < check_arr.Count(); i++)
+                        {
+                            listView3.Items[check_arr[i]].Checked = true;
+                        }
+                        listView3.EndUpdate();
+                        label2.Text = "";
+                    });
+                }
+            }
+        }
         
         private void button1_Click(object sender, EventArgs e)
         {
@@ -601,6 +712,45 @@ namespace Dimiwords_Client_CS
                 wordsList.Add(id);
                 //Console.WriteLine(wordsList[0][1] + " " + list[1]);
             }
+        }
+
+        private void textBox1_Enter(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "영문으로 단어를 검색해보세요.")
+            {
+                textBox1.Text = "";
+                textBox1.ForeColor = SystemColors.WindowText;
+            }
+        }
+
+        private void textBox1_Leave(object sender, EventArgs e)
+        {
+            if (textBox1.Text.Length == 0)
+            {
+                textBox1.Text = "영문으로 단어를 검색해보세요.";
+                textBox1.ForeColor = SystemColors.GrayText;
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            new Thread(SearchWords) { IsBackground = true }.Start();
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //엔터 키를 누르면 검색 버튼이 자동으로 눌리게 만듬
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                button8.PerformClick();
+                //이게 없으면 엔터를 누르면 에러 소리가 난다
+                e.Handled = true;
+            }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            new Thread(new ParameterizedThreadStart(GetWords)) { IsBackground = true }.Start(null);
         }
 
         private void button5_Click(object sender, EventArgs e)

@@ -59,6 +59,9 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -80,6 +83,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button9);
+            this.tabPage1.Controls.Add(this.button8);
+            this.tabPage1.Controls.Add(this.textBox1);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.button6);
             this.tabPage1.Controls.Add(this.button7);
@@ -365,6 +371,42 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "과";
             // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.textBox1.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.textBox1.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.textBox1.Location = new System.Drawing.Point(35, 498);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(174, 21);
+            this.textBox1.TabIndex = 11;
+            this.textBox1.Text = "영문으로 단어를 검색해보세요.";
+            this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_Leave);
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(215, 497);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 12;
+            this.button8.Text = "검색";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
+            // button9
+            // 
+            this.button9.Enabled = false;
+            this.button9.ForeColor = System.Drawing.Color.Red;
+            this.button9.Location = new System.Drawing.Point(6, 496);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(23, 23);
+            this.button9.TabIndex = 13;
+            this.button9.Text = "X";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -420,5 +462,8 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
     }
 }

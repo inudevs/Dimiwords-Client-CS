@@ -13,6 +13,7 @@ namespace Dimiwords_Client_CS
         //dll이 존재하는지 확인하기 위한 변수
         private bool IsDLL = false;
         public User user;
+        public bool IsClose = false;
 
         public Login()
         {
@@ -147,6 +148,7 @@ namespace Dimiwords_Client_CS
                 //new Main(new User(name, intro, email, department, points, submit, accept, token)).Show();
                 user = new User(name, intro, email, department, points, submit, accept, token);
                 //Hide();
+                IsClose = true;
                 Close();
             }
             //로그인에 실패했다면
@@ -156,6 +158,7 @@ namespace Dimiwords_Client_CS
                 var error = json["error"].ToString();
                 //실패한 이유를 사용자에게 알려준다
                 MessageBox.Show(this, $"{(error == "No User" ? "로그인 정보가 맞는지 확인해주세요." : "로그인 도중 에러가 발생했습니다.")}", "Fail", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                textBox2.Text = "";
             }
         }
         

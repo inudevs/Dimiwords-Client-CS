@@ -194,8 +194,8 @@ namespace Dimiwords_Client_CS
             }
             //json 읽기
             var json = JObject.Parse(result);
-            var success = json["success"].ToString();
-            if (Convert.ToBoolean(success))
+            var success = (bool)json["success"];
+            if (success)
             {
                 MessageBox.Show(this, "회원가입에 성공했습니다! 로그인해 주세요.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
