@@ -763,6 +763,11 @@ namespace Dimiwords_Client_CS
             new CreateWord(this, user_data).Show();
         }
 
+        private void Main_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Discord.Shutdown();
+        }
+
         private void button5_Click(object sender, EventArgs e)
         {
             new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(false);

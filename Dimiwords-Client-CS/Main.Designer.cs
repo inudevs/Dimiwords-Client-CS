@@ -30,6 +30,7 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -62,7 +63,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.button10 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -100,6 +100,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Words";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(612, 496);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(156, 23);
+            this.button10.TabIndex = 14;
+            this.button10.Text = "찾는 단어가 없나요?";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button9
             // 
@@ -409,16 +419,6 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "과";
             // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(612, 496);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(156, 23);
-            this.button10.TabIndex = 14;
-            this.button10.Text = "찾는 단어가 없나요?";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -429,6 +429,7 @@
             this.Controls.Add(this.tabControl1);
             this.Name = "Main";
             this.Text = "Main";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

@@ -54,17 +54,6 @@ namespace Dimiwords_Client_CS
             Discord.StateUpdate("로그인 중...");
         }
 
-        //창을 닫으면 실행
-        private void Main_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //dll이 존재하면
-            if (IsDLL)
-            {
-                //디스코드에 연결을 끊는다
-                Discord.Shutdown();
-            }
-        }
-
         //로그인 버튼 클릭시 실행
         private void button1_Click(object sender, EventArgs e)
         {
@@ -220,6 +209,12 @@ namespace Dimiwords_Client_CS
                 //이게 없으면 엔터를 누르면 에러 소리가 난다
                 e.Handled = true;
             }
+        }
+
+        private void Login_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!IsClose && IsDLL)
+                Discord.Shutdown();
         }
     }
 }
