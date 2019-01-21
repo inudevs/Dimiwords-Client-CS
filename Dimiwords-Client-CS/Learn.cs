@@ -41,7 +41,12 @@ namespace Dimiwords_Client_CS
                         //결과값 변수를 비어져 있는 string자료형으로 선언
                         var result = "";
                         //json형태로 Byte[]자료형 선언
-                        var Data = Encoding.UTF8.GetBytes($"{{\"word\":\"{wordbooks[i].id}\",\"answer\":\"{textBox1.Text}\",\"token\":\"{user.token}\"}}");
+                        var Data = Encoding.UTF8.GetBytes(new JObject()
+                        {
+                            { "word", wordbooks[i].id },
+                            { "answer", textBox1.Text },
+                            { "token", user.token }
+                        }.ToString());
                         //로그인 서버
                         var req = (HttpWebRequest)WebRequest.Create("https://dimiwords.tk:5000/api/auth/check");
                         //Post 형태로
@@ -100,21 +105,27 @@ namespace Dimiwords_Client_CS
                         else if (json["message"].ToString() == "Error")
                         {
                             MessageBox.Show("서버에 제대로 연결하지 못했습니다.\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Close();
+                            Invoke((MethodInvoker)Close);
                             return;
                         }
                         else
                         {
                             MessageBox.Show("잘못된 요청입니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Close();
+                            Invoke((MethodInvoker)Close);
                             return;
                         }
                     }
                     if (skip)
-                    { //결과값 변수를 비어져 있는 string자료형으로 선언
+                    {
+                        //결과값 변수를 비어져 있는 string자료형으로 선언
                         var result = "";
                         //json형태로 Byte[]자료형 선언
-                        var Data = Encoding.UTF8.GetBytes($"{{\"word\":\"{wordbooks[i].id}\",\"answer\":\"{textBox1.Text}\",\"token\":\"{user.token}\"}}");
+                        var Data = Encoding.UTF8.GetBytes(new JObject()
+                        {
+                            { "word", wordbooks[i].id },
+                            { "answer", textBox1.Text },
+                            { "token", user.token }
+                        }.ToString());
                         //로그인 서버
                         var req = (HttpWebRequest)WebRequest.Create("https://dimiwords.tk:5000/api/auth/check");
                         //Post 형태로
@@ -138,7 +149,7 @@ namespace Dimiwords_Client_CS
                         catch (WebException ex)
                         {
                             MessageBox.Show($"서버에 제대로 연결하지 못했습니다.\n{ex.Message}\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Close();
+                            Invoke((MethodInvoker)Close);
                             return;
                         }
                         //이제 받을 준비를 할께!
@@ -169,13 +180,13 @@ namespace Dimiwords_Client_CS
                         if (success)
                         {
                             MessageBox.Show("잘못된 요청입니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Close();
+                            Invoke((MethodInvoker)Close);
                             return;
                         }
                         else if (json["message"].ToString() == "Error")
                         {
                             MessageBox.Show("서버에 제대로 연결하지 못했습니다.\n잠시 후 다시 시도해주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Close();
+                            Invoke((MethodInvoker)Close);
                             return;
                         }
                         else

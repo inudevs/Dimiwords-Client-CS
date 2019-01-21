@@ -14,7 +14,7 @@ namespace Dimiwords_Client_CS
     public partial class Main : Form
     {
         private int rankpage = 1, wordbookspage = 1, wordspage = 1;
-        private List<string> wordsList = new List<string>();
+        private List<WordSchema> wordsList = new List<WordSchema>();
         private User user_data;
 
         //스레드를 한개씩만 돌리기 위한 오브젝트
@@ -333,7 +333,7 @@ namespace Dimiwords_Client_CS
                     }
                     //업데이트가 끝남을 알려 데이터 업데이트를 완료함
                     //label에 현재 페이지를 알려줌
-                    Invoke((MethodInvoker)delegate () {  listView1.EndUpdate(); label1.Text = rankpage.ToString(); });
+                    Invoke((MethodInvoker)delegate () { listView1.EndUpdate(); label1.Text = rankpage.ToString(); });
                 }
             }
             else
@@ -458,15 +458,15 @@ namespace Dimiwords_Client_CS
                         //json 읽기
                         var ko = string.Join(", ", JArray.FromObject(Wordsdata[i]["ko"]).ToObject<string[]>());
                         var en = Wordsdata[i]["en"].ToString();
-                        var id = Wordsdata[i]["_id"].ToString();
+                        var userid = Wordsdata[i]["userId"].ToString();
                         //단어 갱신용 변수
-                        var item = new ListViewItem(new string[] { en, ko, id });
+                        var item = new ListViewItem(new string[] { en, ko, userid });
                         var wordsArray = wordsList.ToArray();
                         Invoke((MethodInvoker)delegate ()
                         {
                             //갱신
                             listView3.Items.Add(item);
-                            if (wordsArray.Contains(id))
+                            if (wordsArray.ContainsEx(new WordSchema(en, ko.Split(new string[] { ", " }, StringSplitOptions.None), userid, 0, 0)))
                             {
                                 check.Add(i);
                             }
@@ -550,7 +550,11 @@ namespace Dimiwords_Client_CS
                 //결과값 변수를 비어져 있는 string자료형으로 선언
                 var result = "";
                 //json형태로 Byte[]자료형 선언
-                var Data = Encoding.UTF8.GetBytes($"{{\"token\":\"{user_data.token}\",\"query\":\"{textBox1.Text}\"}}");
+                var Data = Encoding.UTF8.GetBytes(new JObject
+                {
+                    { "token", user_data.token },
+                    { "query", textBox1.Text }
+                }.ToString());
                 //로그인 서버
                 var req = (HttpWebRequest)WebRequest.Create("https://dimiwords.tk:5000/api/search/words");
                 //Post 형태로
@@ -621,15 +625,15 @@ namespace Dimiwords_Client_CS
                         //json 읽기
                         var ko = string.Join(", ", JArray.FromObject(Wordsdata[i]["ko"]).ToObject<string[]>());
                         var en = Wordsdata[i]["en"].ToString();
-                        var id = Wordsdata[i]["_id"].ToString();
+                        var userid = Wordsdata[i]["userId"].ToString();
                         //단어 갱신용 변수
-                        var item = new ListViewItem(new string[] { en, ko, id });
+                        var item = new ListViewItem(new string[] { en, ko, userid });
                         var wordsArray = wordsList.ToArray();
                         Invoke((MethodInvoker)delegate ()
                         {
                             //갱신
                             listView3.Items.Add(item);
-                            if (wordsArray.Contains(id))
+                            if (wordsArray.ContainsEx(new WordSchema(en, ko.Split(new string[] { ", " }, StringSplitOptions.None), userid, 0, 0)))
                             {
                                 check.Add(i);
                             }
@@ -650,7 +654,7 @@ namespace Dimiwords_Client_CS
                 }
             }
         }
-        
+
         private void button1_Click(object sender, EventArgs e)
         {
             //멀티 스레딩
@@ -700,17 +704,17 @@ namespace Dimiwords_Client_CS
 
         private void listView3_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            var id = e.Item.SubItems[2].Text;
-            //MessageBox.Show(id);
+            var en = e.Item.SubItems[0].Text;
+            var ko = e.Item.SubItems[1].Text.Split(new string[] { ", " }, StringSplitOptions.None);
             var page = wordspage.ToString();
-            if (wordsList.Contains(id) && !e.Item.Checked)
+            var wordsArray = wordsList.ToArray();
+            if (wordsArray.ContainsEx(new WordSchema(en, ko, e.Item.SubItems[2].Text, 0, 0)) && !e.Item.Checked)
             {
-                //Console.WriteLine(wordsList[0] + " " + list);
+                wordsList.Remove(new WordSchema(en, ko, e.Item.SubItems[2].Text, 0, 0));
             }
-            else if (e.Item.Checked)
+            else if (!wordsArray.ContainsEx(new WordSchema(en, ko, e.Item.SubItems[2].Text, 0, 0)) && e.Item.Checked)
             {
-                wordsList.Add(id);
-                //Console.WriteLine(wordsList[0][1] + " " + list[1]);
+                wordsList.Add(new WordSchema(en, ko, e.Item.SubItems[2].Text, 0, 0));
             }
         }
 
@@ -773,7 +777,26 @@ namespace Dimiwords_Client_CS
 
         private void button3_Click(object sender, EventArgs e)
         {
-            //단어장 추가
+            if (wordsList.Count > 0)
+            {
+                Hide();
+                new CreateWordbook(wordsList.ToArray(), user_data, this).Show();
+            }
+        }
+    }
+
+    public static class ListEx
+    {
+        public static bool ContainsEx(this WordSchema[] list, WordSchema wordSchema)
+        {
+            for (var i = 0; i < list.Count(); i++)
+            {
+                if (list[i].en == wordSchema.en && string.Join(", ", list[i].ko) == string.Join(", ", wordSchema.ko) && list[i].userid == wordSchema.userid)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

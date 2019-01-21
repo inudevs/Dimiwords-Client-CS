@@ -78,7 +78,11 @@ namespace Dimiwords_Client_CS
             //결과값 변수를 비어져 있는 string자료형으로 선언
             var result = "";
             //json형태로 Byte[]자료형 선언
-            var Data = Encoding.UTF8.GetBytes($"{{\"email\":\"{textBox1.Text}\",\"password\":\"{textBox2.Text}\"}}");
+            var Data = Encoding.UTF8.GetBytes(new JObject()
+            {
+                { "email", textBox1.Text },
+                { "password", textBox2.Text }
+            }.ToString());
             //로그인 서버
             var req = (HttpWebRequest)WebRequest.Create("https://dimiwords.tk:5000/api/auth/login");
             //Post 형태로

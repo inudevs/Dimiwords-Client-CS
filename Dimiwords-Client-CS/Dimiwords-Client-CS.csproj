@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateWordbook.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateWordbook.Designer.cs">
+      <DependentUpon>CreateWordbook.cs</DependentUpon>
+    </Compile>
     <Compile Include="Discord.cs" />
     <Compile Include="Learn.cs">
       <SubType>Form</SubType>
@@ -78,6 +84,10 @@
     </Compile>
     <Compile Include="User.cs" />
     <Compile Include="Wordbooks.cs" />
+    <Compile Include="WordSchema.cs" />
+    <EmbeddedResource Include="CreateWordbook.resx">
+      <DependentUpon>CreateWordbook.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Learn.resx">
       <DependentUpon>Learn.cs</DependentUpon>
     </EmbeddedResource>
