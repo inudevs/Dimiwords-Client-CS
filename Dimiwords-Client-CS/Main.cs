@@ -757,6 +757,12 @@ namespace Dimiwords_Client_CS
             new Thread(new ParameterizedThreadStart(GetWords)) { IsBackground = true }.Start(null);
         }
 
+        private void button10_Click(object sender, EventArgs e)
+        {
+            Hide();
+            new CreateWord(this, user_data).Show();
+        }
+
         private void button5_Click(object sender, EventArgs e)
         {
             new Thread(new ParameterizedThreadStart(GetWordbooks)) { IsBackground = true }.Start(false);

@@ -62,6 +62,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.button10 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -83,6 +84,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button10);
             this.tabPage1.Controls.Add(this.button9);
             this.tabPage1.Controls.Add(this.button8);
             this.tabPage1.Controls.Add(this.textBox1);
@@ -407,6 +409,16 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "과";
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(612, 496);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(156, 23);
+            this.button10.TabIndex = 14;
+            this.button10.Text = "찾는 단어가 없나요?";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -465,5 +477,6 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
     }
 }

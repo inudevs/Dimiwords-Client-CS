@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateWord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateWord.Designer.cs">
+      <DependentUpon>CreateWord.cs</DependentUpon>
+    </Compile>
     <Compile Include="CreateWordbook.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +91,9 @@
     <Compile Include="User.cs" />
     <Compile Include="Wordbooks.cs" />
     <Compile Include="WordSchema.cs" />
+    <EmbeddedResource Include="CreateWord.resx">
+      <DependentUpon>CreateWord.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CreateWordbook.resx">
       <DependentUpon>CreateWordbook.cs</DependentUpon>
     </EmbeddedResource>
